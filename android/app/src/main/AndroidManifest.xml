@@ -32,6 +32,6 @@
         <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="@string/admob_app_id" />
     </application>
 
-    <!-- Internet is used only for the optional anonymous stats and surveys (off until the player taps "Share"). -->
+    <!-- Internet: optional anonymous stats and surveys (off until the player taps "Share") and the optional reward videos (Google AdMob). -->
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

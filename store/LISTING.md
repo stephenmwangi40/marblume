@@ -1,4 +1,4 @@
-# Marblume — store listing kit (version 1.12.0)
+# Marblume — store listing kit (version 1.12.1)
 
 Everything below is ready to paste. Images are in `store/play/` and `store/appstore/`, videos in `store/video/`.
 
@@ -85,6 +85,7 @@ Seeds are earned by playing. Your progress stays on your device. Sharing anonymo
 ### App content
 - **Privacy policy:** URL above
 - **Ads:** **Yes, my app contains ads** (rewarded videos the player chooses to watch)
+- **Advertising ID:** **Yes**, the app uses the advertising ID. Purposes: **Advertising or marketing**, **Analytics**, **Fraud prevention, security and compliance** (it comes from the Google Mobile Ads SDK)
 - **App access:** All functionality available without special access (no login)
 - **Content rating (IARC questionnaire):** Category "Game"; answer **No** to violence, sexuality, language, controlled substances, gambling, user interaction/communication, sharing location, digital purchases → expected rating **Everyone / PEGI 3**
 - **Target audience:** choose **13+** (13–15, 16–17, 18+). Choosing under-13 brings in the Families policy and extra review; the game is still fine for all ages.
@@ -110,7 +111,7 @@ Google requires a **closed test with at least 12 testers for 14 days in a row** 
 **Keywords (≤100):** ball,sort,puzzle,color,colour,marble,logic,brain,water,tube,daily,relax,hard,challenge,frozen
 **Description:** use the Google Play full description above.
 **Category:** Games → Puzzle (secondary: Games → Casual)
-**Age rating:** answer **None** to every content question → **4+**. "Unrestricted web access": **No** (links open in Safari).
+**Age rating:** answer **None** to every content question → **4+**. "Unrestricted web access": **No** (links open in Safari). "Advertising": **Yes** (optional reward videos, limited to General content).
 **Copyright:** © 2026 Marblume
 **Price:** Free · **In-app purchases:** None
 
@@ -143,7 +144,10 @@ Already answered in the app (`ITSAppUsesNonExemptEncryption = NO`): the app only
 
 ---
 
-## What's new in 1.12.0 (paste into both stores)
+## What's new in 1.12.1 (paste into both stores)
+• Fixes: video buttons now only appear when a video is ready
+
+## What's new in 1.12.0
 • Optional videos: watch one for a hint, an extra tube or bonus seeds — only when you choose, never between levels
 • Settings → Ad choices and Report an ad
 • Updated privacy policy

@@ -114,17 +114,6 @@ Optional **rewarded videos**: for a hint (after the 3 free daily hints), an extr
 
 All IDs live in **`ads.json`** (now Google's test IDs, which show test ads and earn nothing). Put your AdMob app IDs, rewarded ad unit IDs and publisher ID there; `npm run build:web` copies them into Android, iOS, `www/ads.js` and `site-src/app-ads.txt`. Store answers for ads are in `store/LISTING.md`.
 
-## Flutter version (flutter/)
-
-The core game rebuilt in Flutter: the same 10,000 levels and rules (undo, hints, Expert play, frozen tubes, hidden balls) with 3D marbles and liquid glass.
-It installs next to the main app as **Marblume F** (`com.marblume.flutter` on Android and iOS). GitHub Actions builds its APK, AAB and .ipa with every release.
-
-```bash
-cp www/levels.json flutter/assets/levels.json   # the levels are shared, not duplicated in git
-cd flutter && flutter test && flutter run
-flutter build web --release --base-href /flutter/ --no-web-resources-cdn   # npm run deploy:site then publishes it at /flutter/
-```
-
 ## Credits
 
 Interface icons from [awesome_icons](https://github.com/JonathanGech/awesome_icons) by Jonathan Getachew (MIT licence).
