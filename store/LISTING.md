@@ -1,4 +1,4 @@
-# Marblume — store listing kit (version 1.11.0)
+# Marblume — store listing kit (version 1.11.1)
 
 Everything below is ready to paste. Images are in `store/play/` and `store/appstore/`, videos in `store/video/`.
 
@@ -61,7 +61,7 @@ Seeds are earned by playing. Your progress stays on your device. Sharing anonymo
 **Category:** Game → Puzzle · **Tags:** Puzzle, Casual, Logic, Brain games
 **Contains ads:** No (change to Yes in the same release that adds AdMob) · **In-app purchases:** No
 
-### Data safety form (version 1.11.0)
+### Data safety form (version 1.11.1)
 - Does your app collect or share any of the required user data types? **Yes**
 - Is all of the user data collected by your app encrypted in transit? **Yes** (HTTPS)
 - Do you provide a way for users to request that their data is deleted? **Yes** — in the app: Settings → Delete my shared stats (and the website Support page)
@@ -127,7 +127,10 @@ Already answered in the app (`ITSAppUsesNonExemptEncryption = NO`): the app only
 
 ---
 
-## What's new in 1.11.0 (paste into both stores)
+## What's new in 1.11.1 (paste into both stores)
+• Home now follows your Light, Dark or Automatic appearance setting
+
+## What's new in 1.11.0
 • A brand-new Home: your next level front and centre, with a live board, the next boss and your next flower
 • Daily countdown and streak, Expert switch and your world path right on Home
 • Liquid glass across the app, and faster screens on older phones
