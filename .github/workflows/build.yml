@@ -117,7 +117,7 @@ jobs:
         env:
           KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          cp www/levels.json flutter/assets/levels.json
+          mkdir -p flutter/assets && cp www/levels.json flutter/assets/levels.json
           cd flutter
           if [ "$HAS_KEY" = true ]; then
             echo "$KEYSTORE" | base64 --decode > android/upload.jks
@@ -141,7 +141,7 @@ jobs:
         with: { flutter-version: 3.47.7, channel: stable, cache: true }
       - name: Unsigned .ipa
         run: |
-          cp www/levels.json flutter/assets/levels.json
+          mkdir -p flutter/assets && cp www/levels.json flutter/assets/levels.json
           cd flutter
           flutter pub get
           flutter build ios --release --no-codesign
