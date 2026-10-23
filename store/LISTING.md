@@ -1,4 +1,4 @@
-# Marblume — store listing kit (version 1.11.1)
+# Marblume — store listing kit (version 1.12.0)
 
 Everything below is ready to paste. Images are in `store/play/` and `store/appstore/`, videos in `store/video/`.
 
@@ -8,7 +8,11 @@ Everything below is ready to paste. Images are in `store/play/` and `store/appst
 | Support | https://marblume.stephenmurigimwangi403.workers.dev/support |
 | Marketing / website | https://marblume.stephenmurigimwangi403.workers.dev |
 
-> **About ads.** The listing makes no "no ads" promise, so you can add AdMob later. Before you release a build with ads, update: the Play *Ads* declaration, Data safety (advertising ID, device IDs shared with Google), the App Store privacy label (identifiers used for advertising / tracking), add an App Tracking Transparency prompt on iOS, use Google's consent message (UMP) for users in the EEA and UK, add an `app-ads.txt` file to the website, and update the privacy policy (it already says it will change before ads appear).
+> **Ads (from 1.12.0).** The phone apps show optional **rewarded videos from Google AdMob** (hint, extra tube, double win seeds, +20 seeds in the Shop; max 10 a day, never between levels, none in Expert, none on the web). Before you publish:
+> 1. Create the app in [AdMob](https://apps.admob.com) for Android and iOS, make one **Rewarded** ad unit for each, and put the two app IDs, the two ad unit IDs and your publisher ID (`pub-…`) into `ads.json`. Until then the builds show Google's **test ads** and earn nothing.
+> 2. Run `npm run deploy:site` so `/app-ads.txt` goes live, and use the website URL above as the **developer website** in both stores (AdMob checks app-ads.txt there).
+> 3. In AdMob → Privacy & messaging, create the **GDPR (EEA/UK/Switzerland)** message and the **IDFA explainer** for iOS; the app shows them through Google's consent SDK before any ad loads.
+> 4. Fill in the ads answers below in Play Console and App Store Connect.
 
 ---
 
@@ -59,9 +63,9 @@ PLAY YOUR WAY
 Seeds are earned by playing. Your progress stays on your device. Sharing anonymous game results to help balance the puzzles is optional and can be switched off at any time.
 
 **Category:** Game → Puzzle · **Tags:** Puzzle, Casual, Logic, Brain games
-**Contains ads:** No (change to Yes in the same release that adds AdMob) · **In-app purchases:** No
+**Contains ads:** Yes (optional rewarded videos, Google AdMob) · **In-app purchases:** No
 
-### Data safety form (version 1.11.1)
+### Data safety form (version 1.12.0)
 - Does your app collect or share any of the required user data types? **Yes**
 - Is all of the user data collected by your app encrypted in transit? **Yes** (HTTPS)
 - Do you provide a way for users to request that their data is deleted? **Yes** — in the app: Settings → Delete my shared stats (and the website Support page)
@@ -70,11 +74,17 @@ Seeds are earned by playing. Your progress stays on your device. Sharing anonymo
   - **App activity → Other user-generated content** — answers to optional in-app surveys. Purpose: **Analytics**.
   - **Device or other IDs** — a random code created by the app (not the advertising ID). Purpose: **Analytics**.
 - Is collection required or optional? **Optional** for all of the above (nothing is sent until the player taps "Share"; survey answers are optional).
-- Data shared: **None**.
+- Data shared: **None** by Marblume itself.
+- **Google AdMob (ads SDK) — add these too.** Collected **and shared** with Google, collected automatically when ads load (in the EEA/UK only after consent), encrypted in transit:
+  - **Location → Approximate location** (from the IP address) — Advertising or marketing, Analytics, Fraud prevention, security and compliance.
+  - **App activity → App interactions** (ad views and taps) — Advertising or marketing, Analytics.
+  - **App info and performance → Crash logs, Diagnostics** — Analytics, Fraud prevention.
+  - **Device or other IDs → Advertising ID** — Advertising or marketing, Analytics, Fraud prevention.
+  See Google's guide: https://support.google.com/admob/answer/11128377
 
 ### App content
 - **Privacy policy:** URL above
-- **Ads:** No ads (update before adding AdMob)
+- **Ads:** **Yes, my app contains ads** (rewarded videos the player chooses to watch)
 - **App access:** All functionality available without special access (no login)
 - **Content rating (IARC questionnaire):** Category "Game"; answer **No** to violence, sexuality, language, controlled substances, gambling, user interaction/communication, sharing location, digital purchases → expected rating **Everyone / PEGI 3**
 - **Target audience:** choose **13+** (13–15, 16–17, 18+). Choosing under-13 brings in the Families policy and extra review; the game is still fine for all ages.
@@ -88,7 +98,7 @@ Seeds are earned by playing. Your progress stays on your device. Sharing anonymo
 - Promo video: upload `store/video/promo-1920x1080.mp4` to YouTube (public or unlisted, ads off) and paste its link in *Main store listing → Video*.
 
 ### Before production (new personal developer accounts)
-Google requires a **closed test with at least 12 testers for 14 days in a row** before you can publish to production. Upload `release/Marblume-1.6.0.aab` to a closed testing track first, invite 12+ testers (friends' Gmail addresses or a Google Group), and keep it running for 14 days.
+Google requires a **closed test with at least 12 testers for 14 days in a row** before you can publish to production. Upload the latest `Marblume-x.y.z.aab` from GitHub Releases to a closed testing track first, invite 12+ testers (friends' Gmail addresses or a Google Group), and keep it running for 14 days.
 
 ---
 
@@ -109,7 +119,13 @@ Choose **"Yes, we collect data"**, then:
 - **Usage Data → Product Interaction** — used for **Analytics**; **not linked** to the user's identity; **not used for tracking**.
 - **Identifiers → Device ID** — the random code the app creates (not the IDFA); **Analytics**; not linked; not tracking.
 - **User Content → Other User Content** — optional survey answers; **Analytics**; not linked; not tracking.
-These match `ios/App/App/PrivacyInfo.xcprivacy`. The app does **not** track and does not use the IDFA, so no App Tracking Transparency prompt is needed (that changes if you add AdMob).
+These match `ios/App/App/PrivacyInfo.xcprivacy`. For **Google AdMob** (the optional videos) also add — Google's SDK ships its own privacy manifest for these:
+- **Identifiers → Device ID** (the IDFA, only if the player allows tracking) — **Third-Party Advertising**, **Analytics**; **used for tracking: Yes**.
+- **Usage Data → Advertising Data** and **Product Interaction** — **Third-Party Advertising**, **Analytics**.
+- **Location → Coarse Location** (from the IP address) — **Third-Party Advertising**, **Analytics**.
+- **Diagnostics → Crash Data, Performance Data** — **Analytics**.
+The app asks for **App Tracking Transparency** permission (after Google's consent message where required) with the text in `Info.plist` → `NSUserTrackingUsageDescription`. Ads are limited to the **General** content rating, matching 4+. Players can report an ad in Settings → Report an ad (guideline 2.5.18).
+See Google's guide: https://developers.google.com/admob/ios/privacy/data-disclosure
 
 ### Screenshots and app preview
 - iPhone 6.9″ (required): `store/appstore/iphone-6.9in/` (1320×2868)
@@ -119,7 +135,7 @@ These match `ios/App/App/PrivacyInfo.xcprivacy`. The app does **not** track and 
 ### App Review information
 - **Sign-in required:** No
 - **Notes for the reviewer:**
-  > Marblume is a puzzle game that plays fully offline; all 10,000 levels ship inside the app. No account, no ads and no purchases. Seeds are an in-game reward earned only by playing and cannot be bought. After three levels the app asks once whether the player wants to share anonymous game results (level, moves, hints, time) with a random app-generated code; nothing is sent unless they tap "Share", and Settings → Privacy can switch it off and delete it. An optional one-question survey may appear on the Home screen; it gives no rewards and never asks for an App Store rating. Tap Play on the home screen to start; Settings (gear icon) contains the privacy policy, support links, language and appearance.
+  > Marblume is a puzzle game that plays fully offline; all 10,000 levels ship inside the app. No account and no purchases. Ads are optional rewarded videos (Google AdMob): the player is offered one only when free hints or the free extra tube are used up, after a win (to double seeds) or in the Shop (+20 seeds), can always choose "Not now" or spend seeds, and never sees ads between levels. On first launch Google's consent message appears where required, then the App Tracking Transparency prompt. Seeds are an in-game reward and cannot be bought. After three levels the app asks once whether the player wants to share anonymous game results (level, moves, hints, time) with a random app-generated code; nothing is sent unless they tap "Share", and Settings → Privacy can switch it off and delete it. An optional one-question survey may appear on the Home screen; it gives no rewards and never asks for an App Store rating. Tap Play on the home screen to start; Settings (gear icon) contains the privacy policy, support links, language and appearance.
 - **Contact:** your name, phone and email (only visible to Apple)
 
 ### Export compliance
@@ -127,7 +143,12 @@ Already answered in the app (`ITSAppUsesNonExemptEncryption = NO`): the app only
 
 ---
 
-## What's new in 1.11.1 (paste into both stores)
+## What's new in 1.12.0 (paste into both stores)
+• Optional videos: watch one for a hint, an extra tube or bonus seeds — only when you choose, never between levels
+• Settings → Ad choices and Report an ad
+• Updated privacy policy
+
+## What's new in 1.11.1
 • Home now follows your Light, Dark or Automatic appearance setting
 
 ## What's new in 1.11.0

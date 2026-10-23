@@ -658,6 +658,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
       <div class="card stat"><b id="winSeeds">+12</b><span>seeds</span></div>
     </div>
     <div id="winBadges" style="width:100%"></div>
+    <button class="btn2" id="winAd" hidden onclick="doubleWin()" style="margin-top:12px"><span data-i="play"></span><span id="winAdT">Watch a video to double your seeds</span></button>
     <div class="spacer" style="flex:1;min-height:12px"></div>
     <p class="muted" style="font-size:var(--f13);margin:14px 0 12px" id="winNote"></p>
     <button class="cta" onclick="afterWin()" id="winNext">Next level<span data-i="arrow"></span></button>
@@ -754,6 +755,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
       <h3 class="serif" style="font-size:var(--f28);margin:4px 0 8px">Spend seeds, not money</h3>
       <p class="muted" style="font-size:var(--f15)">Seeds are earned by playing. Every item here is bought with seeds or earned with a badge.</p>
     </div>
+    <button class="card row" id="shopAd" hidden onclick="shopVideo()" style="width:100%;margin-top:12px;text-align:left"><span class="iconbtn" data-i="play"></span><span style="flex:1;min-width:0"><b style="display:block">Watch a video · +20 seeds</b><small class="muted" style="font-size:var(--f13)" id="shopAdN"></small></span></button>
     <div class="label" style="margin:18px 0 10px">Collect items <span id="shopCount"></span></div>
     <div class="seg" role="tablist" id="shopTabs" style="margin-bottom:12px"></div>
     <div class="auto" style="--min:132px" id="themes"></div>
@@ -803,6 +805,8 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
     <div class="card" style="padding:2px 16px">
       <div class="setrow"><span class="t"><b>Share anonymous game stats</b><small>Levels, moves and hints, to help balance the puzzles. Never your name.</small></span><button class="toggle" data-set="stats" onclick="toggleStats()" aria-label="Share anonymous game stats"></button></div>
       <button class="setrow" style="width:100%;text-align:left" onclick="deleteShared()"><span class="t"><b>Delete my shared stats</b><small>Removes everything this device has sent</small></span><span data-i="chev"></span></button>
+      <button class="setrow" style="width:100%;text-align:left" id="setAdChoices" hidden onclick="adChoices()"><span class="t"><b>Ad choices</b><small>Change how ads may use your data</small></span><span data-i="chev"></span></button>
+      <a class="setrow" style="width:100%" id="setAdReport" hidden href="https://marblume.stephenmurigimwangi403.workers.dev/support/contact" target="_blank" rel="noopener"><span class="t"><b>Report an ad</b><small>Tell us about an ad that seems wrong for this game</small></span><span data-i="chev"></span></a>
       <button class="setrow" style="width:100%;text-align:left" onclick="go('privacy')"><span class="t"><b>Privacy policy</b><small>What stays on your device and what is shared</small></span><span data-i="chev"></span></button>
       <button class="setrow" style="width:100%;text-align:left" onclick="go('help')"><span class="t"><b>Help &amp; support</b><small>How to play, questions and contact</small></span><span data-i="chev"></span></button>
     </div>
@@ -866,7 +870,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
   <div class="body gut">
     <div class="head"><button class="iconbtn" onclick="go('settings')" data-i="back" aria-label="Back"></button><h2 class="h-title serif">Privacy policy</h2></div>
     <div class="card doc">
-      <p class="muted" style="font-size:var(--f13)">Last updated 8 October 2026</p>
+      <p class="muted" style="font-size:var(--f13)">Last updated 23 October 2026</p>
       <p style="margin-top:10px"><b>In short:</b> your progress stays on your device. If you agree, the game also sends anonymous game results so we can balance the puzzles — never your name, email, contacts or location. You can switch this off and delete it at any time.</p>
       <h3>What stays on your device</h3>
       <p>Your levels, stars, seeds, collection, daily results, statistics, profile (the optional name, avatar and ring colour) and settings. Nobody else can see them. Deleting the game removes them, and Settings → Reset progress erases them any time. A backup code is only made when you ask for one, and only you keep it.</p>
@@ -875,13 +879,13 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
       <h3>Short surveys (optional)</h3>
       <p>Sometimes a short question appears on the Home screen, such as how much you enjoy the game. Answering is optional and gives no rewards. We store your answer, and the random code only if you share stats.</p>
       <h3>Ads</h3>
-      <p>Marblume shows no ads today. If that changes, we will update this policy and the app store pages before it happens.</p>
+      <p>The Android and iPhone apps can show short videos from Google AdMob, but only when you choose to watch one for a hint, an extra tube or seeds. There are never ads between levels, and the web version has none. Google uses your device’s advertising ID, IP address and ad interactions to show and measure ads. Where the law requires it you are asked first, Settings → Ad choices changes your answer, and on iPhone you choose whether apps may track you. Ads are limited to content suitable for everyone.</p>
       <h3>Contacting us</h3>
       <p>If you write to us from our website's Support page, we receive only what you send, use it only to reply, and delete it 12 months after the last message.</p>
       <h3>Permissions</h3>
-      <p>Internet, for the optional stats and surveys, and vibration, for optional haptics.</p>
+      <p>Internet, for the optional stats, surveys and videos; vibration, for optional haptics; and, in the phone apps, the advertising ID used by Google’s ads.</p>
       <h3>Children</h3>
-      <p>Marblume is suitable for all ages and does not knowingly collect personal information from anyone. Anonymous stats stay off unless someone switches them on.</p>
+      <p>Marblume is suitable for all ages but is not directed at children. Ads are limited to content for general audiences, and anonymous stats stay off unless someone switches them on.</p>
       <p style="margin-top:14px"><a href="https://marblume.stephenmurigimwangi403.workers.dev/privacy" target="_blank" rel="noopener" style="font-weight:700">Full policy on our website</a></p>
     </div>
   </div>
@@ -889,6 +893,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
 
 <div id="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dlgT"><div class="dim" onclick="closeDialog(false)"></div><div class="box">
   <h3 class="serif" style="font-size:var(--f24)" id="dlgT"></h3><div class="muted" style="margin:8px 0 20px;line-height:1.5" id="dlgX"></div>
+  <button class="btn2" id="dlgAlt" style="margin-bottom:10px" hidden onclick="closeDialog('alt')"></button>
   <div class="grid2"><button class="btn2" onclick="closeDialog(false)" id="dlgNo">Cancel</button><button class="cta" style="min-height:48px;font-size:var(--f15)" id="dlgOk" onclick="closeDialog(true)">OK</button></div>
 </div></div>
 <div id="flyLayer" aria-hidden="true"></div>
@@ -896,11 +901,12 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
 <div id="toast" role="status"></div>
 </div>
 
+<script src="ads.js"></script>
 <script src="levels.js"></script>
 <script src="i18n.js"></script>
 <script>
 'use strict';
-const VERSION='1.11.1';
+const VERSION='1.12.0';
 const API=window.MARBLUME_API??'https://marblume.stephenmurigimwangi403.workers.dev';
 const DATA=window.MARBLUME_LEVELS;const LV=DATA.levels;const TOTAL=LV.length;
 
@@ -990,11 +996,11 @@ const KEY='marblume.v1';
 const DEFAULTS={unlocked:1,stars:{},seeds:100,best:{},recent:[],hints:{day:'',left:3},onboarded:false,
   daily:{},streak:0,bestStreak:0,lastDaily:'',dailyMonths:{},history:[],counters:{wins:0,moves:0,hints:0,tubes:0,undos:0,thaws:0,clean:0},
   theme:'classic',tube:'glass',shape:'round',bg:'cream',fx:'petals',owned:{},flowersSeen:0,badges:{},frozenSeen:false,
-  profile:{name:'',avatar:0,ring:0},prefs:{theme:'auto',text:'auto',lang:'auto'},install:'',queue:[],surveys:{},
+  profile:{name:'',avatar:0,ring:0},ads:{day:'',n:0,shop:0},prefs:{theme:'auto',text:'auto',lang:'auto'},install:'',queue:[],surveys:{},
   expert:{},settings:{smart:true,symbols:true,lefty:false,sound:true,haptics:true,saver:false,relaxed:false,expert:false,stats:null}};
 let S;
 function normalize(o){S=Object.assign(JSON.parse(JSON.stringify(DEFAULTS)),o||{});
-  for(const k of ['settings','profile','counters','prefs'])S[k]=Object.assign({},DEFAULTS[k],S[k]||{});
+  for(const k of ['settings','profile','counters','prefs','ads'])S[k]=Object.assign({},DEFAULTS[k],S[k]||{});
   for(const k of ['history','queue','recent'])if(!Array.isArray(S[k]))S[k]=[];
   for(const k of ['stars','best','daily','owned','badges','surveys','dailyMonths','expert'])if(!S[k]||typeof S[k]!=='object')S[k]={};
   // owned items record how they were obtained: {how:'starter'|'bought'|'earned', price, date}
@@ -1037,9 +1043,9 @@ function buzz(kind){if(!S.settings.haptics)return;try{if(P.Haptics){if(kind==='s
 
 /* ---------- dialog (replaces window.confirm) ---------- */
 let dlgResolve=null,dlgOnOk=null;
-function ask(title,text,ok='OK',o={}){dlgT.textContent=title;if(o.html)dlgX.innerHTML=text;else dlgX.textContent=text;dlgOk.textContent=ok;dlgNo.textContent=o.cancel||tr('Cancel');dlgOnOk=o.onOk||null;
+function ask(title,text,ok='OK',o={}){dlgT.textContent=title;if(o.html)dlgX.innerHTML=text;else dlgX.textContent=text;dlgOk.textContent=ok;dlgNo.textContent=o.cancel||tr('Cancel');dlgAlt.hidden=!o.alt;dlgAlt.textContent=o.alt||'';dlgOnOk=o.onOk||null;
   $('dialog').classList.add('on');setTimeout(()=>(o.focus?$(o.focus):dlgOk).focus(),50);return new Promise(r=>dlgResolve=r)}
-function closeDialog(v){if(v&&dlgOnOk)try{dlgOnOk()}catch(e){}dlgOnOk=null;$('dialog').classList.remove('on');if(dlgResolve){dlgResolve(v);dlgResolve=null}}
+function closeDialog(v){if(v===true&&dlgOnOk)try{dlgOnOk()}catch(e){}dlgOnOk=null;$('dialog').classList.remove('on');if(dlgResolve){dlgResolve(v);dlgResolve=null}}
 
 /* ---------- appearance, text size, settings ---------- */
 const mqDark=matchMedia('(prefers-color-scheme: dark)');
@@ -1056,7 +1062,7 @@ function applySettings(){const s=S.settings;const gm=$('game');gm.className=gm.c
 function toggleSet(k){S.settings[k]=!S.settings[k];if(S.settings[k]&&(k==='expert'||k==='relaxed'))S.settings[k==='expert'?'relaxed':'expert']=false;save();applySettings();if(k==='haptics')buzz();if(k==='sound')SFX.ui();if(k==='relaxed'&&current==='settings')toast(tr(S.settings.relaxed?'Relaxed play is on. It starts with your next level.':'Relaxed play is off.'));if(k==='expert'&&current==='settings')toast(tr(S.settings.expert?'Expert play is on. It starts with your next level.':'Expert play is off.'))}
 function setPref(k,v){S.prefs[k]=v;save();if(k==='theme')applyTheme();if(k==='text')applyText();if(k==='lang'){pickLang();translateStatic();paintNav();renderOB();RENDER[current]?.();renderSettings()}}
 function renderSettings(){setTheme.value=S.prefs.theme;setText.value=S.prefs.text;
-  setLang.innerHTML=[['auto',tr('Automatic')],...LANGS].map(([k,l])=>`<option value="${k}">${l}</option>`).join('');setLang.value=S.prefs.lang||'auto';$('ver').textContent=VERSION}
+  setLang.innerHTML=[['auto',tr('Automatic')],...LANGS].map(([k,l])=>`<option value="${k}">${l}</option>`).join('');setLang.value=S.prefs.lang||'auto';$('ver').textContent=VERSION;setAdChoices.hidden=!ads.choices;setAdReport.hidden=!ads.on}
 async function resetProgress(){if(!await ask(tr('Reset everything?'),tr('All levels, stars, seeds, garden and your profile on this device will be erased. This cannot be undone.'),tr('Reset')))return;
   const keep={settings:S.settings,prefs:S.prefs,install:S.install,surveys:S.surveys};normalize(keep);S.onboarded=true;save();applySettings();setSeeds(S.seeds);toast(tr('Progress reset'));go('home')}
 
@@ -1197,8 +1203,8 @@ const HELP=[
  ['How do I play?','Tap a tube to lift its top ball, then tap where it should go. A ball can land on the same colour or in an empty tube. Finish when every tube holds one colour.'],
  ['What do Hard, Very hard, Expert and Master mean?','Every level has its own difficulty from 1 to 100. Boards differ in colours, tube size (3 to 7 balls), spare tubes, hidden balls and frozen tubes.'],
  ['What is a frozen tube?','Some levels from World 2 start with one spare tube frozen. It shows the colour that thaws it: finish a tube of that colour and the ice melts, giving you an extra empty tube.'],
- ['How does Hint work?','Hint works out a real solution from where you are now and shows the best next move: tap the tube marked “From”, then the one marked “To”. You get 3 free hints a day, then each costs 25 seeds.'],
- ['What does the Tube button do?','It adds an empty tube to the current level. The first one each level is free, then each costs 40 seeds. Extra tubes stay even if you undo.'],
+ ['How does Hint work?','Hint works out a real solution from where you are now and shows the best next move: tap the tube marked “From”, then the one marked “To”. You get 3 free hints a day, then each costs 25 seeds or, in the phone apps, a short video you choose to watch.'],
+ ['What does the Tube button do?','It adds an empty tube to the current level. The first one each level is free, then each costs 40 seeds or, in the phone apps, a short video you choose to watch. Extra tubes stay even if you undo.'],
  ['What is Relaxed play?','Settings → Relaxed play starts every level with one extra empty tube. Levels are still the same puzzles, just with more room.'],
  ['What are hidden balls?','On some levels the lower balls show a “?”. They reveal themselves when they reach the top — and when you pour, matching hidden balls move along too.'],
  ['How do stars work?','Finish in par moves or fewer for 3 stars, within about 30% more for 2 stars, otherwise 1 star.'],
@@ -1293,7 +1299,7 @@ function renderHome(){const n=Math.min(S.unlocked,TOTAL),v=lvInfo(n),w=v.world,r
     setHTML(hFlowers,fl?Array.from({length:fl-from},(_,i)=>{const k=from+i+1;return flower(BALLS[k%12].c,100,5+(k%4))}).join(''):`<p class="lb-empty" style="grid-column:1/-1">${tr('Every 10 levels grows a flower.')}</p>`);
     const got=BADGES.filter(b=>S.badges[b[0]]);hBadgeN.textContent=`${got.length} / ${BADGES.length}`;
     setHTML(hMedals,[...got,...BADGES.filter(b=>!S.badges[b[0]])].slice(0,5).map(b=>`<span class="lb-medal ${S.badges[b[0]]?'got':''}" title="${esc(tr(b[1]))}">${svg(b[3])}</span>`).join(''))}
-  renderSurvey();if(!warmScreens.done){warmScreens.done=true;setTimeout(warmScreens,1200)}
+  renderSurvey();if(S.onboarded)startAds();if(!warmScreens.done){warmScreens.done=true;setTimeout(warmScreens,1200)}
   if(S.settings.stats===null&&doneCount()>=3&&!askedStats){askedStats=true;setTimeout(askStats,700)}}
 // Lays out the two biggest screens (Levels, Shop) in idle moments while the player is on Home,
 // so the first time they open they appear at once instead of stuttering.
@@ -1420,7 +1426,7 @@ function render(){if(!tubes.length)return;stopFlights();const r=boardHTML(tubes,
   if(!rack||board._st!==r.style||rack.children.length!==r.tubes.length){board.style.cssText=board._st=r.style;board.innerHTML='<div class="rack"></div>';rack=board.firstElementChild}
   rack.style.cssText=r.rack;
   r.tubes.forEach((t,i)=>{const old=rack.children[i];if(old&&old._h===t)return;const tp=document.createElement('template');tp.innerHTML=t;const el=tp.content.firstElementChild;el._h=t;old?old.replaceWith(el):rack.append(el)});
-  mv.textContent=zenMode?'':moves;hintTag.textContent=expert?tr('off'):hintsLeft()>0?hintsLeft():'25';tubeTag.textContent=expert?tr('off'):extra>0?extra:'40';undoTag.textContent=expert?undoLeft:'∞';
+  mv.textContent=zenMode?'':moves;hintTag.textContent=expert?tr('off'):hintsLeft()>0?hintsLeft():canAd('hint')?'▶':'25';tubeTag.textContent=expert?tr('off'):extra>0?extra:canAd('tube')?'▶':'40';undoTag.textContent=expert?undoLeft:'∞';
   for(const b of document.querySelectorAll('.tool.help'))b.setAttribute('aria-disabled',expert)}
 function shakeTool(i){const el=document.querySelectorAll('#game .tool')[i];if(!el)return;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');SFX.wrong();buzz()}
 function shake(i){const el=tubeEl(i);if(!el)return;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),320)}
@@ -1480,6 +1486,39 @@ function undo(){if(!hist.length){tipSet(tr('Nothing to undo yet'));return}if(und
   while(tubes.length<nT){tubes.push([]);hid.push([])} // extra tubes you added stay after Undo
   if(fz&&lk!==null)fz.locked=lk;
   sel=null;S.counters.undos++;if(sess)sess.un++;render();tipSet(expert?trn(undoLeft,'{n} undo left','{n} undos left'):tr('Undone — undo is always free'))}
+/* ---------- rewarded ads (phones only, Google AdMob): always the player's choice, never between levels ---------- */
+const AD=P.AdMob,AD_UNIT=(window.MARBLUME_ADS||{})[PLATFORM],AD_DAY=10,AD_SHOP_DAY=5,AD_SEEDS=20;
+const ads={on:false,ready:false,loading:false,choices:false};
+function adsToday(){if(S.ads.day!==today())S.ads={day:today(),n:0,shop:0};return S.ads}
+function canAd(kind){const d=adsToday();return ads.ready&&d.n<AD_DAY&&(kind!=='shop'||d.shop<AD_SHOP_DAY)}
+// consent first (Google's form, where the law asks for it), then Apple's tracking question, then load an ad
+async function startAds(){if(!AD||!AD_UNIT||startAds.done)return;startAds.done=true;
+  try{let c=await AD.requestConsentInfo();
+    if(c.isConsentFormAvailable&&c.status==='REQUIRED')c=await AD.showConsentForm();
+    ads.choices=c.privacyOptionsRequirementStatus==='REQUIRED';
+    if(!c.canRequestAds)return;
+    if(PLATFORM==='ios'&&(await AD.trackingAuthorizationStatus()).status==='notDetermined')await AD.requestTrackingAuthorization();
+    await AD.initialize({initializeForTesting:!!window.MARBLUME_ADS.testing,tagForChildDirectedTreatment:false,maxAdContentRating:'General'});
+    ads.on=true;loadAd()}catch(e){}}
+function loadAd(){if(!ads.on||ads.ready||ads.loading)return;ads.loading=true;
+  AD.prepareRewardVideoAd({adId:AD_UNIT}).then(()=>{ads.ready=true}).catch(()=>{}).finally(()=>{ads.loading=false;refreshAdOffers()})}
+// plays a video; resolves true only when Google reports the reward was earned (watched to the end)
+function watchAd(kind){return new Promise(async res=>{if(!canAd(kind))return res(false);ads.ready=false;let earned=false,ended=false;const hs=[];
+  const end=()=>{if(ended)return;ended=true;hs.forEach(x=>x.remove());if(earned){const d=adsToday();d.n++;if(kind==='shop')d.shop++;save()}loadAd();refreshAdOffers();res(earned)};
+  try{hs.push(await AD.addListener('onRewardedVideoAdReward',()=>{earned=true}),await AD.addListener('onRewardedVideoAdDismissed',()=>setTimeout(end,300)),await AD.addListener('onRewardedVideoAdFailedToShow',end));
+    await AD.showRewardVideoAd()}catch(e){end()}})}
+function refreshAdOffers(){if(current==='game')render();if(current==='shop')renderShopAd();if(current==='win')winAd.hidden=!(winGain>0&&canAd('win'));if(current==='settings')renderSettings()}
+// offers a video in place of seeds; returns 'ad' (watched), 'seeds' (chose seeds) or '' (not now / video unfinished)
+async function adOrSeeds(kind,title,text,cost){
+  if(!canAd(kind))return S.seeds>=cost?'seeds':'';
+  const c=await ask(title,text,tr('Watch video'),{cancel:tr('Not now'),alt:S.seeds>=cost?tr('Use {n} seeds',{n:cost}):''});
+  if(c==='alt')return 'seeds';if(c!==true)return '';
+  if(await watchAd(kind))return 'ad';tipSet(tr('The video didn’t finish, so nothing was added'));return ''}
+let winGain=0,winTotal=0;
+async function doubleWin(){if(winGain>0&&await watchAd('win')){setSeeds(S.seeds+winGain);winTotal+=winGain;winSeeds.textContent='+'+N(winTotal);toast(tr('+{n} seeds',{n:winGain}));winGain=0;winAd.hidden=true}}
+function renderShopAd(){shopAd.hidden=!canAd('shop');shopAdN.textContent=tr('{n} left today',{n:AD_SHOP_DAY-adsToday().shop})}
+async function shopVideo(){if(await watchAd('shop')){setSeeds(S.seeds+AD_SEEDS);toast(tr('+{n} seeds',{n:AD_SEEDS}));renderShop()}}
+function adChoices(){AD?.showPrivacyOptionsForm().catch(()=>{})}
 // Hint: search for a real solution from the current position (same rules as the level solver) and show its first move.
 function solveFirst(T0,cap0,limit,F){
   const key=(T,l)=>T.map(t=>t.join('')).sort().join(',')+(l?'#':''),hh=T=>{let s=0;for(const t of T)for(let i=1;i<t.length;i++)if(t[i]!==t[i-1])s++;return s};
@@ -1494,9 +1533,11 @@ function solveFirst(T0,cap0,limit,F){
         const Nn=T.map(t=>t.slice()),m=Math.min(run,cap0-B.length);for(let k=0;k<m;k++)Nn[b].push(Nn[a].pop());const nl=l&&!keyDone(Nn);const kk=key(Nn,nl);if(seen.has(kk))continue;seen.add(kk);
         push({T:Nn,g:g+1,f:g+1+2*hh(Nn),first:first||[a,b],l:nl})}}}
   return null}
-function hint(){
+async function hint(){
   if(expert){shakeTool(2);tipSet(tr('No hints in Expert play'));return}
-  if(hintsLeft()<=0&&S.seeds<25){tipSet(tr('Out of hints today — earn seeds by finishing levels'));return}
+  let pay='free';
+  if(hintsLeft()<=0){pay=await adOrSeeds('hint',tr('Out of free hints today'),tr('Watch a short video for a free hint.'),25);
+    if(!pay){if(!canAd('hint')&&S.seeds<25)tipSet(tr('Out of hints today — earn seeds by finishing levels'));return}}
   tipSet(tr('Thinking…'));
   setTimeout(()=>{
     let best=solveFirst(tubes,cap,60000,fz),sure=!!best&&best!=='done';
@@ -1505,13 +1546,14 @@ function hint(){
       for(let a=0;a<tubes.length&&!best;a++)for(let b=0;b<tubes.length;b++)if(canMove(a,b)&&tubes[b].length){best=[a,b];break}
       if(!best)for(let a=0;a<tubes.length&&!best;a++){const A=tubes[a];if(!A.length||A.every(x=>x===A[0]))continue;for(let b=0;b<tubes.length;b++)if(canMove(a,b)){best=[a,b];break}}}
     if(!best){tipSet(tr('No good move from here — tap Undo or add a tube'));return}
-    if(hintsLeft()>0){S.hints.left--}else setSeeds(S.seeds-25);S.counters.hints++;if(sess)sess.hi++;save();
+    if(pay==='free')S.hints.left--;else if(pay==='seeds')setSeeds(S.seeds-25);S.counters.hints++;if(sess)sess.hi++;save();
     sel=null;render();const [a,b]=best;const ea=tubeEl(a),eb=tubeEl(b);
     ea.classList.add('hint');ea.dataset.hint=tr('From');eb.classList.add('hint');eb.dataset.hint=tr('To');
     tipSet(sure?tr('Best move: from the tube marked “From” to “To”'):tr('This position is tricky — try this move, or Undo a few steps'));
     clearTimeout(hint._t);hint._t=setTimeout(()=>board.querySelectorAll('.hint').forEach(e=>{e.classList.remove('hint');delete e.dataset.hint}),3200)},30)}
-function addTube(){if(expert){shakeTool(3);tipSet(tr('No extra tubes in Expert play'));return}if(tubes.length>=16){tipSet(tr('No room for another tube'));return}
-  if(extra>0){extra--}else if(S.seeds>=40){setSeeds(S.seeds-40)}else{tipSet(tr('You need 40 seeds for another tube'));return}
+async function addTube(){if(expert){shakeTool(3);tipSet(tr('No extra tubes in Expert play'));return}if(tubes.length>=16){tipSet(tr('No room for another tube'));return}
+  if(extra>0){extra--}else{const pay=await adOrSeeds('tube',tr('Out of free tubes on this level'),tr('Watch a short video for an extra empty tube.'),40);
+    if(!pay){if(!canAd('tube')&&S.seeds<40)tipSet(tr('You need 40 seeds for another tube'));return}if(pay==='seeds')setSeeds(S.seeds-40)}
   tubes.push([]);hid.push([]);sel=null;S.counters.tubes++;if(sess)sess.tb++;save();render();SFX.ui();tipSet(extra>0?tr('Extra tube added'):tr('Extra tube added')+(S.seeds>=40?' · '+tr('next one costs 40 seeds'):''))}
 /* first-time tutorial on level 1: points at a real good move, twice */
 function planCoach(){const m=solveFirst(tubes,cap,20000,fz);coachMove=Array.isArray(m)?m:null;coachStep=coachMove?1:0}
@@ -1556,7 +1598,8 @@ function showWin(){
   S.counters.wins++;S.counters.moves+=moves;setSeeds(S.seeds+gain);save();checkUnlocks();
   const nb=checkBadges();
   winBadges.innerHTML=nb.map(([ti,rw])=>`<div class="card row" style="margin-top:10px;text-align:left"><span class="iconbtn" style="background:var(--bloom);color:var(--on-bloom)">${svg('trophy')}</span><span style="flex:1;min-width:0"><b style="display:block;line-height:1.3">${tr('New badge: {b}',{b:tr(ti)})}</b><span class="muted" style="font-size:var(--f13)">${tr('+{n} seeds',{n:rw})}</span></span></div>`).join('');
-  winMoves.textContent=N(moves);winPar.textContent=N(par);winSeeds.textContent='+'+N(gain+nb.reduce((a,x)=>a+x[1],0));winStars.innerHTML=starRow(s,36);
+  winMoves.textContent=N(moves);winPar.textContent=N(par);winTotal=gain+nb.reduce((a,x)=>a+x[1],0);winSeeds.textContent='+'+N(winTotal);
+  winGain=gain;winAd.hidden=!(gain>0&&canAd('win'));winAdT.textContent=tr('Watch a video for +{n} more seeds',{n:N(gain)});winStars.innerHTML=starRow(s,36);
   winFlower.innerHTML=flower('#F4EEE3',150,8);
   SFX.win();buzz('success');
   go('win');petals();flushStats()}
@@ -1683,7 +1726,7 @@ function checkUnlocks(quiet){const got=[];for(const it of SHOP){const [id,,name,
 function itemCard(it){const [id,kind,name,price,un]=it;const own=S.owned[id],on=S[slotOf(kind)]===id;let st;
   if(on)st=tr('In use');else if(own)st=tr('Owned · tap to use');else if(un){const v=Math.min(un[2],un[1]());st=`${esc(tr(un[0]))}<div class="bar accent" style="margin:6px auto 4px"><i style="width:${v/un[2]*100}%"></i></div>${N(v)}/${N(un[2])}`}else st=tr('{n} seeds',{n:price});
   return `<button class="card item ${on?'on':''}" onclick="itemTap('${id}')" aria-pressed="${on}" aria-label="${esc(tr(name))}${own?'':', '+tr('not owned')}">${!own&&un?`<span class="lock">${svg('lock')}</span>`:''}<div class="prev">${itemPreview(it)}</div><b>${esc(tr(name))}</b><span class="st">${st}</span></button>`}
-function renderShop(){setSeeds(S.seeds);checkUnlocks(true);
+function renderShop(){setSeeds(S.seeds);checkUnlocks(true);renderShopAd();
   const owned=Object.keys(S.owned).filter(itemOf).length;shopCount.textContent=`· ${owned}/${SHOP.length}`;
   shopTabs.innerHTML=KINDS.filter(k=>k[0]!=='shape').map(([k,l])=>`<button role="tab" aria-selected="${k===shopTab}" class="${k===shopTab?'on':''}" onclick="shopTab='${k}';renderShop()">${tr(l)}</button>`).join('');
   setHTML(themes,SHOP.filter(it=>it[1]===shopTab).map(itemCard).join('')+(shopTab==='tube'?`<div class="label" style="grid-column:1/-1;margin:12px 0 0">${tr('Shapes')}</div>`+SHOP.filter(it=>it[1]==='shape').map(itemCard).join(''):''));

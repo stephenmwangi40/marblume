@@ -1,18 +1,19 @@
 {
   "name": "marblume",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "private": true,
   "description": "Marblume: Ball Sort Puzzle — 10,000 hard, unique levels.",
   "type": "module",
   "scripts": {
     "levels": "node scripts/prepare-levels.mjs",
-    "build:web": "node scripts/prepare-levels.mjs && node scripts/build-i18n.mjs && node scripts/copy-fonts.mjs",
+    "build:web": "node scripts/ads-config.mjs && node scripts/prepare-levels.mjs && node scripts/build-i18n.mjs && node scripts/copy-fonts.mjs",
     "sync": "npm run build:web && npx cap sync",
     "build:site": "node scripts/build-site.mjs",
     "deploy:site": "node scripts/build-site.mjs && npx wrangler deploy",
     "levels:verify": "node scripts/verify-levels.mjs --solve"
   },
   "dependencies": {
+    "@capacitor-community/admob": "8.2.1",
     "@capacitor/android": "^8.5.2",
     "@capacitor/app": "^8.1.2",
     "@capacitor/cli": "^8.5.2",

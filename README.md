@@ -44,14 +44,14 @@ Copy them into `release/` with the new version in the name.
 1. Create a developer account at play.google.com/console (one-time $25).
 2. Create the app → upload `the latest Marblume-x.y.z.aab from GitHub Releases`. Opt in to **Play App Signing** (Google keeps the final key; ours is the upload key).
 3. Privacy policy URL: `https://marblume.stephenmurigimwangi403.workers.dev/privacy`
-4. Data safety form: see `store/LISTING.md` (v1.6: optional anonymous app interactions + a random app code, not shared, deletable in the app). Content rating: Everyone. Ads: No (until AdMob is added). In-app purchases: No.
+4. Data safety form: see `store/LISTING.md` (v1.6: optional anonymous app interactions + a random app code, not shared, deletable in the app). Content rating: Everyone. Ads: Yes (optional rewarded videos, see "Ads" below). In-app purchases: No.
 5. Phones are locked to portrait; on tablets and foldables Android 16 allows any orientation, and the app's layout adapts to it.
 
 ### Store-rules notes
 - No placeholder or "coming soon" features in the app (App Store guideline 2.1).
 - Privacy policy linked inside the app (Settings → About) and on the store listings.
 - iOS includes `PrivacyInfo.xcprivacy` (no tracking; optional product-interaction stats, app-made ID and survey answers, not linked to the user); iPad supports all orientations.
-- No ads, no purchases and no accounts today. The game plays offline; it only goes online for the optional stats (off until the player taps “Share”) and surveys.
+- No purchases and no accounts. The game plays offline; it goes online only for the optional stats (off until the player taps “Share”), surveys and the optional videos in the phone apps.
 - Surveys must never offer rewards or ask for a store rating (the admin refuses questions that mention store reviews).
 
 ## Build for iOS
@@ -107,6 +107,12 @@ The logo (three tubes of marbles with a marble flower blooming from the middle o
 
 Static files in `site-src/` (landing page, privacy policy, 404). `scripts/build-site.mjs` adds the playable web game at `/play/`, screenshots from `site-src/shots/` and the latest APK at `/download/`. Hosted as a Cloudflare Worker with static assets (`wrangler.jsonc`).
 To use your own domain: Cloudflare dashboard → Workers & Pages → marblume → Settings → Domains & Routes → Add custom domain.
+
+## Ads (Google AdMob, phone apps only)
+
+Optional **rewarded videos**: for a hint (after the 3 free daily hints), an extra tube (after the free one), double seeds on the win screen and +20 seeds in the Shop. At most 10 a day (5 from the Shop), never between levels, none in Expert play, none on the web. Order on first launch: Google's consent message (where required) → Apple's tracking prompt on iOS → ads load. Settings has **Ad choices** and **Report an ad**.
+
+All IDs live in **`ads.json`** (now Google's test IDs, which show test ads and earn nothing). Put your AdMob app IDs, rewarded ad unit IDs and publisher ID there; `npm run build:web` copies them into Android, iOS, `www/ads.js` and `site-src/app-ads.txt`. Store answers for ads are in `store/LISTING.md`.
 
 ## Flutter version (flutter/)
 

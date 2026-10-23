@@ -1,0 +1,12 @@
+{
+  "about": "AdMob IDs. These are Google's public TEST IDs (they show test ads and earn nothing). Replace them with your own from apps.admob.com, set publisherId (pub-...), then run npm run build:web.",
+  "publisherId": "",
+  "android": {
+    "appId": "ca-app-pub-3940256099942544~3347511713",
+    "rewarded": "ca-app-pub-3940256099942544/5224354917"
+  },
+  "ios": {
+    "appId": "ca-app-pub-3940256099942544~1458002511",
+    "rewarded": "ca-app-pub-3940256099942544/1712485313"
+  }
+}

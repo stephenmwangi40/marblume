@@ -29,6 +29,7 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="@string/admob_app_id" />
     </application>
 
     <!-- Internet is used only for the optional anonymous stats and surveys (off until the player taps "Share"). -->
