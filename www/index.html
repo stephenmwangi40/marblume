@@ -58,6 +58,7 @@ a{color:inherit}
 /* ---------- screens & responsive container ---------- */
 .screen{--mw:640px;position:absolute;inset:0;display:flex;visibility:hidden;content-visibility:hidden;flex-direction:column;background:var(--paper);color:var(--ink);padding-top:var(--st)}
 .screen.active{visibility:visible;content-visibility:visible;animation:fade .25s ease}
+.screen:before{content:"";position:absolute;z-index:6;top:0;left:0;right:0;height:var(--st);background:var(--mat);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);box-shadow:0 1px 0 var(--mat-line);pointer-events:none}
 @keyframes fade{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
 .screen.dark{--scene:var(--navy);background:var(--navy);color:var(--cream)}
 /* content is centred and capped at --mw; side padding never smaller than 20px + safe area */
@@ -246,7 +247,7 @@ body.lefty .toolbar{direction:rtl}
 
 /* ---------- sheets & dialogs ---------- */
 .dim{position:absolute;inset:0;background:rgba(10,16,32,.45);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.backdrop{position:absolute;inset:0;display:flex;flex-direction:column;padding-top:120px;pointer-events:none}
+.backdrop{position:absolute;inset:0;display:flex;flex-direction:column;padding-top:120px;pointer-events:none;isolation:isolate}
 .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--sheet);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-top:1px solid var(--mat-hi);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:14px 20px calc(24px + var(--sb));max-height:92%;overflow-y:auto;box-shadow:var(--e2)}
 .sheet .grab{width:44px;height:5px;border-radius:5px;background:var(--ink-15);margin:0 auto 16px}
 @media (min-width:640px){.sheet{left:50%;right:auto;width:520px;bottom:50%;transform:translate(-50%,50%);border-radius:var(--r-xl);padding:22px 26px 26px}.sheet .grab{display:none}}
@@ -278,11 +279,12 @@ body.lefty .toolbar{direction:rtl}
 .node .tagx{position:absolute;left:100%;margin-left:10px;white-space:nowrap;font-size:var(--f11);font-family:'DM Sans',sans-serif;font-weight:700;background:var(--mat);padding:3px 8px;border-radius:var(--r-sm);color:var(--ink);box-shadow:var(--e1)}
 .node .tagx.l{left:auto;right:100%;margin:0 10px 0 0}
 .lvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(54px*var(--ts)),1fr));gap:8px}
-.lv{content-visibility:auto;contain-intrinsic-size:auto 54px;aspect-ratio:1;border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-weight:700;font-size:var(--f13);line-height:1.1;background:var(--mat);position:relative;box-shadow:var(--e1);font-variant-numeric:tabular-nums}
+.lvblock{content-visibility:auto;contain-intrinsic-size:auto 520px;margin-bottom:8px}
+.lv{aspect-ratio:1;border-radius:var(--r-md);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-weight:700;font-size:var(--f13);line-height:1.1;background:var(--mat);position:relative;box-shadow:var(--e1);font-variant-numeric:tabular-nums}
 .lv.done{background:var(--ink);color:var(--paper)}
 .lv.lock{background:transparent;border:2px dashed var(--ink-15);color:var(--ink-55);box-shadow:none}
 .lv.cur{background:var(--bloom);color:var(--on-bloom)}
-.lv .stars{font-size:10px;color:inherit}.lv .stars .off{opacity:.3;color:inherit}
+.lv .stars{font-size:10px;color:inherit;letter-spacing:1px}.lv .stars i{font-style:normal;opacity:.3}.lv .stars .off{opacity:.3;color:inherit}
 .lv.boss{border-radius:50% 50% var(--r-md) var(--r-md)}
 .lv .dot{position:absolute;top:4px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--leaf)}
 .lv .fz{position:absolute;top:3px;left:4px;width:12px;height:12px;color:#5AA7D6}
@@ -381,18 +383,91 @@ body.lefty .toolbar{direction:rtl}
 #toast{position:absolute;left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:460px;bottom:calc(110px + var(--sb));z-index:90;background:rgba(22,33,58,.86);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);color:var(--cream);padding:12px 14px;border-radius:var(--r-md);font-size:var(--f13);line-height:1.45;transition:opacity .3s;opacity:0;pointer-events:none;box-shadow:var(--e2)}
 #toast{box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
 
-/* ---------- wider screens: tablets, laptops, desktops ---------- */
-.homegrid{display:grid;gap:16px}
-.homeprev{display:none}
-@media (min-width:700px){
-  .homeprev{display:flex;justify-content:center;padding:18px 0 4px}
-  .homevc{min-height:100%;display:flex;flex-direction:column;justify-content:center}
-}
+/* ---------- home: the game lobby (always dark, like the win and world screens) ---------- */
+.lobby{--ink:#EFE9DD;--paper:#0B1222;--paper2:#141D35;--surface:#1A2442;--surface2:#141D35;--ink-08:rgba(239,233,221,.09);--ink-15:rgba(239,233,221,.2);--ink-55:rgba(239,233,221,.74);
+  --mat:rgba(34,48,90,.55);--mat-hi:rgba(255,255,255,.16);--mat-lo:rgba(255,255,255,.05);--mat-line:rgba(239,233,221,.1);--glass-a:rgba(255,255,255,.05);--glass-edge:rgba(239,233,221,.3);--scene:#16213A;
+  --e1:inset 0 1px 0 var(--mat-hi),inset 0 -1px 0 var(--mat-lo),0 0 0 1px var(--mat-line),0 2px 0 rgba(0,0,0,.3);color-scheme:dark;background:#0B1222;color:var(--ink)}
+.lb{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding-top:6px}
+.lb-top{display:flex;align-items:center;gap:10px}
+.lb-me{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left}
+.lb-av{position:relative;flex:none}.lb-av .av{box-shadow:0 0 0 3px #0B1222,0 0 0 6px var(--ring,var(--bloom))}
+.lb-av b{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);background:var(--bloom);color:#16213A;font-size:var(--f11);font-weight:800;padding:0 7px;border-radius:99px;box-shadow:0 0 0 2px #0B1222;font-variant-numeric:tabular-nums}
+.lb-who{min-width:0}.lb-who b{display:block;font-size:var(--f17);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-rank{display:flex;align-items:center;gap:8px;min-width:0;margin-top:4px;font-size:var(--f11);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#E9B44C}
+.lb-xp{flex:0 1 120px;min-width:24px;height:6px;border-radius:99px;background:var(--ink-08);overflow:hidden}.lb-xp i{display:block;height:100%;background:#E9B44C}
+.lb-dot{width:14px;height:14px;border-radius:50%;box-shadow:inset -3px -3px 0 rgba(0,0,0,.22);flex:none}
+.lb-stars{display:none}
+.lb-stage{border-radius:var(--r-xl);background:#16213A;padding:18px 18px 16px;box-shadow:inset 0 1px 0 var(--mat-hi),0 0 0 1px var(--mat-line),0 4px 0 #070C18}
+.lb-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.lb-lvl{font-size:calc(clamp(52px,15vw,64px)*var(--ts));line-height:.95;letter-spacing:-.03em;margin-top:6px;font-variant-numeric:tabular-nums}
+.lb-lvl small{font:800 var(--f15) 'DM Sans',sans-serif;letter-spacing:.08em;color:var(--ink-55);margin-right:6px;vertical-align:.9em;text-transform:uppercase}
+.lb-boss{flex:none;background:#2A1A20;color:var(--bloom);box-shadow:inset 0 0 0 1.5px var(--bloom);border-radius:12px;padding:6px 10px;font-size:var(--f11);font-weight:800;letter-spacing:.12em;text-transform:uppercase;text-align:center;line-height:1.3}
+.lb-boss b{display:block;font:900 var(--f24) 'Fraunces',serif;letter-spacing:0;color:var(--ink)}
+.lb-board{display:flex;justify-content:center;padding:30px 0 16px;min-height:120px}
+.lb-board .tube .ball:last-child.lift{transform:translateY(calc(var(--bs) * -.95));animation:lbBob 2.4s ease-in-out infinite}
+@keyframes lbBob{50%{transform:translateY(calc(var(--bs) * -1.15))}}
+.lb-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--ink-08);padding-top:14px;text-align:center}
+.lb-facts>div+div{border-left:1px solid var(--ink-08)}
+.lb-facts b{display:block;font:900 var(--f24) 'Fraunces',serif;line-height:1.1;font-variant-numeric:tabular-nums}
+.lb-facts span{display:block;font-size:var(--f11);font-weight:800;color:var(--ink-55);letter-spacing:.1em;text-transform:uppercase;line-height:1.4}
+.lb-meter{display:flex!important;gap:4px;justify-content:center;margin:8px 0 6px}
+.lb-meter i{width:14px;height:6px;border-radius:2px;background:var(--ink-08)}.lb-meter i.on{background:var(--dc,#E9B44C)}
+.lb-reward{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.05);font-size:var(--f13);font-weight:700}
+.lb-reward svg{width:26px;height:26px;flex:none}
+.lb-reward>span:first-of-type::first-letter{text-transform:uppercase}
+.lb-pips{margin-left:auto;display:flex;gap:4px;flex:none}.lb-pips i{width:8px;height:8px;border-radius:50%;background:var(--ink-15)}.lb-pips i.on{background:var(--leaf)}
+.lb-play{min-height:70px;font-size:calc(22px*var(--ts));letter-spacing:.08em;text-transform:uppercase;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 0 #C8442A}
+.lb-play small{display:block;font-size:var(--f11);letter-spacing:.16em;opacity:.7;text-align:left}
+.lb-play>span:last-child{text-align:left;line-height:1.05}
+.lb-play svg.i{width:26px;height:26px}
+.lb-play:active{transform:translateY(5px);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 1px 0 #C8442A}
+/* cards: tinted glass with a bright rim (blur stays on the floating bars, as Apple recommends) */
+.lb-glass{background:var(--mat);box-shadow:var(--e1);border-radius:var(--r-lg)}
+.lb-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lb-card{padding:14px;text-align:left;display:flex;flex-direction:column;gap:9px;transition:transform .1s}
+button.lb-card:active,.lb-mode:active{transform:scale(.97)}
+.lb-card .serif{font-size:var(--f20);line-height:1.15}
+.lb-p{font-size:var(--f12);color:var(--ink-55);line-height:1.35}
+.lb-tag{align-self:flex-start;font-size:var(--f11);font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:6px;color:#16213A}
+.lb-tag.live{background:var(--bloom)}.lb-tag.x2{background:#E9B44C}.lb-tag.done{background:var(--leaf)}
+.lb-timer{font:900 var(--f24) 'Fraunces',serif;line-height:1;font-variant-numeric:tabular-nums}
+.lb-streak{display:flex;gap:4px}.lb-streak i{flex:1;height:8px;border-radius:3px;background:var(--ink-08)}.lb-streak i.on{background:var(--bloom)}
+.lb-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.lb-mode{padding:12px 10px;text-align:left;display:flex;flex-direction:column;gap:8px;transition:transform .1s;min-height:44px}
+.lb-mode .mi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#16213A}
+.lb-mode .mi svg.i{width:19px;height:19px;stroke-width:2}
+.lb-mode b{font-size:var(--f15);line-height:1.2;overflow-wrap:anywhere}
+.lb-path{padding:14px 16px}
+.lb-track{display:flex;align-items:center;margin-top:14px}
+.lb-node{min-width:32px;height:32px;padding:0 4px;border-radius:99px;display:grid;place-items:center;font-size:var(--f11);font-weight:800;flex:none;background:var(--ink-08);color:var(--ink-55);font-variant-numeric:tabular-nums}
+.lb-node.done{background:var(--leaf);color:#16213A}
+.lb-node.cur{min-width:42px;height:42px;background:var(--bloom);color:#16213A;font-size:var(--f13);box-shadow:0 0 0 4px rgba(255,90,54,.25)}
+.lb-node.boss{border-radius:10px;background:#2A1A20;color:var(--bloom);box-shadow:inset 0 0 0 1.5px var(--bloom);padding:0 7px}
+.lb-line{flex:1;min-width:6px;height:4px;background:var(--ink-08)}.lb-line.done{background:var(--leaf)}
+.lb-wide{display:none}
+.lb-flowers{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;margin-top:12px}
+.lb-flowers svg{width:100%;height:auto;display:block}
+.lb-medals{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
+.lb-medal{aspect-ratio:1;border-radius:14px;display:grid;place-items:center;background:var(--ink-08);color:var(--ink-55)}
+.lb-medal.got{background:var(--bloom);color:#16213A}.lb-medal svg.i{width:46%;height:46%}
+.lb-empty{font-size:var(--f13);color:var(--ink-55);margin-top:10px}
 @media (min-width:860px){
-  .homegrid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
-  .homegrid .modes{margin-top:0}
+  .lb{gap:18px}
+  .lb-stars{display:inline-flex}
+  .lb-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
+  .lb-main,.lb-side{display:grid;gap:16px;align-content:start}
+  .lb-wide{display:block}
+  .lb-board{padding:40px 0 22px}
+  .lb-lvl{font-size:calc(76px*var(--ts))}
+}
+@media (min-width:860px) and (max-height:900px){.lb{gap:14px}.lb-lvl{font-size:calc(60px*var(--ts))}.lb-board{padding:26px 0 14px;min-height:0}.lb-main,.lb-side{gap:12px}.lb-medal{aspect-ratio:auto;height:56px}}
+@media (max-width:859px){.lb-grid,.lb-main,.lb-side{display:contents}}
+@media (max-width:399px){.lb-pips{display:none}}
+@media (max-width:359px){.lb-modes{grid-template-columns:1fr}.lb-cards{grid-template-columns:1fr}}
+
+/* ---------- wider screens: tablets, laptops, desktops ---------- */
+@media (min-width:860px){
   .pfgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
-  .homeprev{display:flex;justify-content:center;padding:18px 0 4px}
 }
 /* side navigation on landscape tablets, laptops and computers */
 @media (min-width:1000px) and (min-aspect-ratio:1/1){
@@ -400,11 +475,10 @@ body.lefty .toolbar{direction:rtl}
   .screen[data-nav] .body{padding-bottom:calc(24px + var(--sb))}
   .nav{position:relative;left:auto;bottom:auto;transform:none;order:-1;flex:none;flex-direction:column;justify-content:center;align-self:center;gap:4px;width:92px;margin:16px 0 calc(16px + var(--sb)) calc(16px + var(--sl));padding:8px;border-radius:30px}
   .nav button{min-height:68px;flex:none;width:100%;font-size:var(--f12);border-radius:22px}
-  .homevc{min-height:100%;display:flex;flex-direction:column;justify-content:center}
 }
 @media (prefers-reduced-transparency:reduce){
   :root,#game.glight,#game.gdark{--mat:var(--surface);--sheet:var(--paper)}
-  .nav,.tool,.iconbtn,.sheet,#dialog .box,#toast,.coach .bub{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .nav,.tool,.iconbtn,.sheet,#dialog .box,#toast,.coach .bub,.screen:before{backdrop-filter:none;-webkit-backdrop-filter:none}
   #game.gdark .tool{--ink:#16213A;--paper:#F4EEE3;--surface:#FFFFFF}
 }
 @media (prefers-contrast:more){:root{--mat:var(--surface);--mat-line:var(--ink-55);--sheet:var(--paper)}}
@@ -439,34 +513,64 @@ body.lefty .toolbar{direction:rtl}
   </div>
 </div>
 
-<div class="screen" data-id="home" data-nav="home" style="--mw:1040px">
-  <div class="body gut"><div class="homevc">
-    <div class="row between" style="margin:6px 0 18px;gap:12px">
-      <button class="row" style="min-width:0;flex:1;text-align:left" onclick="go('profile')" aria-label="Open your profile"><span id="homeAv"></span><span style="min-width:0"><b style="display:block;font-size:var(--f17);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="homeHi">Hello</b><span class="muted" style="display:block;font-size:var(--f13);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="homeSub"></span></span></button>
-      <div class="row" style="gap:8px;flex:none"><span class="pill num" aria-label="Seeds"><span data-i="seed"></span><span class="seeds">0</span></span><button class="iconbtn" onclick="go('settings')" data-i="gear" aria-label="Settings"></button></div>
-    </div>
+<div class="screen lobby" data-id="home" data-nav="home" style="--mw:1100px">
+  <div class="body gut"><div class="lb">
+    <header class="lb-top">
+      <button class="lb-me" onclick="go('profile')" aria-label="Open your profile"><span class="lb-av" id="hAv"></span><span class="lb-who"><b id="hName">Hello</b><span class="lb-rank"><span id="hRank"></span><span class="lb-xp"><i id="hXp"></i></span></span></span></button>
+      <span class="pill num lb-stars" id="hStarsPill"><span class="lb-dot" style="background:#E9B44C"></span><span id="hStars">0</span></span>
+      <span class="pill num" id="hSeedsPill"><span data-i="seed"></span><span class="seeds">0</span></span>
+      <button class="iconbtn" onclick="go('settings')" data-i="gear" aria-label="Settings"></button>
+    </header>
     <div id="homeSurvey"></div>
-    <div class="homegrid">
-      <div>
-        <div class="card hero" style="padding:22px;position:relative;overflow:hidden">
-          <div class="label" id="homeWorld"></div>
-          <h2 class="serif" style="font-size:var(--f-display);margin:4px 0 4px;font-variant-numeric:tabular-nums" id="homeLevel"></h2>
-          <p class="muted" style="font-size:var(--f15)" id="homeMeta"></p>
-          <div class="homeprev" id="homePrev" aria-hidden="true"></div>
-          <div class="bar" style="margin:16px 0 6px"><i id="homeBar"></i></div>
-          <p class="muted" style="font-size:var(--f13)" id="homeProg"></p>
-          <div class="dmeter" id="homeDiff"></div>
-        </div>
-        <div style="margin:16px 0 0"><button class="cta" onclick="playCurrent()"><span data-i="play"></span>Play</button></div>
+    <div class="lb-grid">
+      <div class="lb-main">
+        <section class="lb-stage" aria-labelledby="hLvl">
+          <div class="lb-head"><div style="min-width:0"><div class="label" id="hWorld"></div><h2 class="lb-lvl serif" id="hLvl"></h2></div><div class="lb-boss" id="hBoss"></div></div>
+          <div class="lb-board" id="hBoard" aria-hidden="true"></div>
+          <div class="lb-facts">
+            <div><b id="hPar">0</b><span>Par</span></div>
+            <div id="hDiff"><span class="lb-meter" id="hMeter"></span><span id="hTier"></span></div>
+            <div><b id="hCols">0</b><span>Colours</span></div>
+          </div>
+          <div class="lb-reward" id="hReward"></div>
+        </section>
+        <button class="cta lb-play" onclick="playCurrent()" id="hPlayBtn"><span data-i="play"></span><span><span>Play</span><small id="hPlaySub"></small></span></button>
+        <section class="lb-glass lb-path lb-wide" aria-labelledby="hBadgeT">
+          <div class="row between"><span class="label" id="hBadgeT">Badges</span><span class="label num" id="hBadgeN"></span></div>
+          <div class="lb-medals" id="hMedals"></div>
+        </section>
       </div>
-      <div class="modes" style="margin-top:6px">
-        <div class="label" style="margin-bottom:10px">Modes</div>
-        <div class="grid2">
-          <button class="card" style="text-align:left" onclick="go('daily')"><span data-i="cal" style="color:var(--bloom)"></span><span class="cardtitle">Daily Bloom</span><span class="cardsub" id="homeStreak">One puzzle a day</span></button>
-          <button class="card" style="text-align:left" onclick="zen()"><span data-i="leaf" style="color:var(--leaf)"></span><span class="cardtitle">Zen</span><span class="cardsub">Random level, no counter</span></button>
-          <button class="card" style="text-align:left" onclick="go('levels')"><span data-i="grid" style="color:#3E7CB1"></span><span class="cardtitle">All levels</span><span class="cardsub">10,000 · 20 worlds</span></button>
-          <button class="card" style="text-align:left" onclick="go('board')"><span data-i="trophy" style="color:#D9A030"></span><span class="cardtitle">My results</span><span class="cardsub">Daily bests</span></button>
+      <div class="lb-side">
+        <div class="lb-cards">
+          <button class="lb-glass lb-card" onclick="go('daily')" aria-describedby="hDailyNote">
+            <span class="lb-tag live" id="hDailyTag">Daily</span>
+            <span><span class="lb-timer" id="hTimer">00:00:00</span><span class="lb-p" style="display:block" id="hDailyNote">left for today's puzzle</span></span>
+            <span class="lb-streak" id="hStreakBar" aria-hidden="true"></span>
+            <span class="lb-p" id="hStreak"></span>
+          </button>
+          <div class="lb-glass lb-card">
+            <span class="lb-tag x2">×2 seeds</span>
+            <b class="serif">Expert</b>
+            <span class="lb-p">No hints. No extra tubes. Only 5 undos.</span>
+            <div class="row between" style="margin-top:auto"><span class="lb-p" id="hExpert">Off</span><button class="toggle" data-set="expert" onclick="toggleSet('expert');renderHome()" aria-label="Expert play"></button></div>
+          </div>
         </div>
+        <section aria-labelledby="hMoreT">
+          <div class="label" style="margin:2px 0 10px" id="hMoreT">More ways to play</div>
+          <div class="lb-modes">
+            <button class="lb-glass lb-mode" onclick="zen()"><span class="mi" style="background:var(--leaf)"><span data-i="leaf"></span></span><b>Zen</b><span class="lb-p">Random level, no counter</span></button>
+            <button class="lb-glass lb-mode" onclick="go('levels')"><span class="mi" style="background:#6FB7D9"><span data-i="grid"></span></span><b>All levels</b><span class="lb-p">10,000 · 20 worlds</span></button>
+            <button class="lb-glass lb-mode" onclick="go('board')"><span class="mi" style="background:#E9B44C"><span data-i="trophy"></span></span><b>My results</b><span class="lb-p">Daily bests</span></button>
+          </div>
+        </section>
+        <section class="lb-glass lb-path" aria-labelledby="hPathT">
+          <div class="row between"><span class="label" id="hPathT"></span><span class="label num" id="hPathN"></span></div>
+          <div class="lb-track" id="hTrack"></div>
+        </section>
+        <section class="lb-glass lb-path lb-wide" aria-labelledby="hGardenT">
+          <div class="row between"><span class="label" id="hGardenT">Your garden</span><span class="label num" id="hGardenN"></span></div>
+          <div class="lb-flowers" id="hFlowers"></div>
+        </section>
       </div>
     </div>
   </div></div>
@@ -490,7 +594,7 @@ body.lefty .toolbar{direction:rtl}
       <button class="iconbtn" onclick="lsWorld(1)" data-i="chev" aria-label="Next world"></button>
     </div>
     <div class="row" style="margin-bottom:12px"><input id="lsGo" inputmode="numeric" enterkeyhint="go" aria-label="Go to level number" placeholder="Go to level #" style="flex:1;min-width:0;background:var(--mat);border-radius:var(--r-md);padding:11px 12px;font-size:var(--f17);box-shadow:var(--e1)" onkeydown="if(event.key==='Enter')lsJump()"><button class="btn2" style="width:auto;background:var(--ink);color:var(--paper);padding:11px 18px" onclick="lsJump()">Go</button></div>
-    <div class="lvgrid" id="lsGrid"></div>
+    <div id="lsGrid"></div>
   </div>
 </div>
 
@@ -794,7 +898,7 @@ body.lefty .toolbar{direction:rtl}
 <script src="i18n.js"></script>
 <script>
 'use strict';
-const VERSION='1.10.0';
+const VERSION='1.11.0';
 const API=window.MARBLUME_API??'https://marblume.stephenmurigimwangi403.workers.dev';
 const DATA=window.MARBLUME_LEVELS;const LV=DATA.levels;const TOTAL=LV.length;
 
@@ -1034,7 +1138,7 @@ function boardHTML(T,c,hidM,cls,box){const r=box&&box.width>60&&box.height>60?{w
         +(done?`<svg class="i fill cap-fl${justDone===i?' new':''}" viewBox="0 0 24 24" aria-hidden="true">${I.flower}</svg>`:'')
         +(frozenNow?`<span class="key">${svg('snow','ice')}${ball(fz.k,Math.round(f.bs*.62))}</span>`:'')
         +t.map((k,j)=>ball(k,0,hidM&&hidM[i]&&hidM[i][j])).join('')+'</div>'})}}
-function miniBoard(T,c,maxW,hidden){const per=T.length>6?Math.ceil(T.length/2):T.length;const g=6;const tw=Math.max(18,Math.min(36,Math.floor((maxW-(per-1)*g)/per)));const bs=tw-8;
+function miniBoard(T,c,maxW,hidden,maxTw=36){const per=T.length>6?Math.ceil(T.length/2):T.length;const g=6;const tw=Math.max(18,Math.min(maxTw,Math.floor((maxW-(per-1)*g)/per)));const bs=tw-8;
   return `<div class="rack" style="--tw:${tw}px;--bs:${bs}px;--g:${g}px;--rg:14px;max-width:${per*tw+(per-1)*g}px;pointer-events:none">${T.map((t,i)=>`<div class="tube tb-${S.tube}" style="height:${c*(bs+4)+12}px;cursor:default">${t.map((k,j)=>ball(k,0,hidden&&j<hidden[i])).join('')}</div>`).join('')}</div>`}
 
 /* ---------- chrome ---------- */
@@ -1156,16 +1260,48 @@ function renderProfile(){const done=doneCount(),r=rankOf(done),pl=playerLevel();
 
 /* ---------- home ---------- */
 let askedStats=false;
-function renderHome(){const n=Math.min(S.unlocked,TOTAL),v=lvInfo(n),w=v.world,r=rankOf(doneCount());
-  homeAv.innerHTML=avatar(S.profile.avatar,48);homeHi.textContent=S.profile.name?tr('Hi, {name}',{name:S.profile.name}):tr('Hello there');
-  homeSub.textContent=`${r.name} · ${tr('Player level {n}',{n:playerLevel().lv})}`;homeWorld.textContent=tr('World {n} · {name}',{n:w+1,name:tr(WORLD_INFO[w][0])});homeLevel.textContent=tr('Level {n}',{n:N(n)});
-  homeMeta.textContent=[tr('{n} colours',{n:v.colors}),tr('{n} tubes of {c}',{n:v.tubes.length,c:v.cap}),tr('par {n}',{n:v.par}),v.hidden?tr('hidden balls'):'',v.frozen?tr('frozen tube'):'',v.type===2?tr('Boss'):v.type===1?tr('Breather'):''].filter(Boolean).join(' · ');
-  {const x=tierOf(v.diff);homeDiff.style.setProperty('--dc',x[2]);homeDiff.innerHTML=`<span>${tr('Difficulty')}</span><div class="bar"><i style="width:${v.diff}%"></i></div>${dchip(v.diff)}`}
-  const inW=(n-1)%PER+1;homeBar.style.width=(inW/PER*100)+'%';const nb=10-((n-1)%10);
-  homeProg.textContent=tr('{a} / {b} in this world',{a:inW,b:PER})+' · '+(nb===1?tr('flower on this level'):tr('{n} levels to next flower',{n:nb}));
-  if(innerWidth>=700)homePrev.innerHTML=miniBoard(v.tubes,v.cap,Math.min(420,homePrev.clientWidth||420),v.hidden);else homePrev.innerHTML='';
-  homeStreak.textContent=currentStreak()?trn(currentStreak(),'{n}-day streak','{n}-day streak'):tr('One puzzle a day');setSeeds(S.seeds);renderSurvey();
+function renderHome(){const n=Math.min(S.unlocked,TOTAL),v=lvInfo(n),w=v.world,r=rankOf(doneCount()),pl=playerLevel();
+  hAv.innerHTML=avatar(S.profile.avatar,52)+`<b>${pl.lv}</b>`;hName.textContent=S.profile.name||tr('Hello there');hRank.textContent=r.name;hXp.style.width=(pl.into/15*100)+'%';
+  hStars.textContent=N(totalStars());hStarsPill.setAttribute('aria-label',tr('{n} stars',{n:N(totalStars())}));setSeeds(S.seeds);
+  // the next level
+  hWorld.textContent=tr('World {n} · {name}',{n:w+1,name:tr(WORLD_INFO[w][0])});hLvl.innerHTML=`<small>${tr('Level')}</small>${N(n)}`;
+  const boss=Math.min(TOTAL,Math.ceil(n/25)*25);hBoss.innerHTML=v.type===2?`${tr('Boss')}<b>!</b>`:`${tr('Boss in')}<b>${N(boss-n)}</b>`;
+  setHTML(hBoard,miniBoard(v.tubes,v.cap,Math.min(hBoard.clientWidth||innerWidth-72,innerWidth>=860?520:400),v.hidden,innerWidth>=860?40:28));
+  const top=hBoard.querySelector('.tube:not(:empty) .ball:last-child');if(top&&!calm())top.classList.add('lift');
+  hPar.textContent=N(v.par);hCols.textContent=N(v.colors);const x=tierOf(v.diff);hDiff.style.setProperty('--dc',x[2]);
+  setHTML(hMeter,[20,40,60,80,100].map(t=>`<i class="${v.diff>=t-19?'on':''}"></i>`).join(''));hTier.textContent=tr(x[1])+' · '+v.diff;
+  const into=(n-1)%10,nb=10-into;
+  setHTML(hReward,`<svg viewBox="0 0 100 100" aria-hidden="true">${flower(BALLS[Math.ceil(n/10)%12].c,100,6).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg><span>${nb===1?tr('flower on this level'):tr('{n} levels to next flower',{n:nb})}</span><span class="lb-pips" aria-hidden="true">${Array.from({length:10},(_,i)=>`<i class="${i<into?'on':''}"></i>`).join('')}</span>`);
+  hPlaySub.textContent=tr('Level {n}',{n:N(n)});hPlayBtn.setAttribute('aria-label',tr('Play level {n}',{n:N(n)}));
+  // daily, expert
+  const st=currentStreak(),doneToday=!!S.daily[today()];
+  setHTML(hStreakBar,Array.from({length:7},(_,i)=>`<i class="${i<Math.min(st,7)?'on':''}"></i>`).join(''));
+  hStreak.textContent=st?trn(st,'{n}-day streak','{n}-day streak'):tr('One puzzle a day');
+  hDailyTag.textContent=doneToday?tr('Done'):tr('Daily');hDailyTag.className='lb-tag '+(doneToday?'done':'live');
+  hDailyNote.textContent=doneToday?tr("until tomorrow's puzzle"):tr("left for today's puzzle");tickHome();
+  hExpert.textContent=S.settings.expert?tr('On'):tr('Off');
+  // world path: the levels around you and the next boss
+  const a=w*PER+1,z=Math.min(TOTAL,a+PER-1),lo=Math.max(a,Math.min(n-2,z-4)),hi=Math.min(z,lo+4);let t='';
+  for(let l=lo;l<=hi;l++){t+=(l>lo?`<span class="lb-line ${l<=n&&S.stars[l-1]?'done':''}"></span>`:'')+`<button class="lb-node ${l===n?'cur':S.stars[l]?'done':''}" onclick="startLevel(${l})" aria-label="${tr('Level {n}',{n:N(l)})}">${N(l)}</button>`}
+  if(boss>hi)t+=`<span class="lb-line"></span><button class="lb-node boss" onclick="startLevel(${boss})" aria-label="${tr('Boss')} · ${tr('Level {n}',{n:N(boss)})}">${N(boss)}</button>`;
+  setHTML(hTrack,t);hPathT.textContent=tr(WORLD_INFO[w][0]);hPathN.textContent=`${N((n-1)%PER+1)} / ${N(PER)}`;
+  // wide screens: garden and badges
+  if(innerWidth>=860){const fl=Math.floor((S.unlocked-1)/10),from=Math.max(0,fl-18);
+    hGardenN.textContent=`${N(fl)} / ${N(Math.floor(TOTAL/10))}`;
+    setHTML(hFlowers,fl?Array.from({length:fl-from},(_,i)=>{const k=from+i+1;return flower(BALLS[k%12].c,100,5+(k%4))}).join(''):`<p class="lb-empty" style="grid-column:1/-1">${tr('Every 10 levels grows a flower.')}</p>`);
+    const got=BADGES.filter(b=>S.badges[b[0]]);hBadgeN.textContent=`${got.length} / ${BADGES.length}`;
+    setHTML(hMedals,[...got,...BADGES.filter(b=>!S.badges[b[0]])].slice(0,5).map(b=>`<span class="lb-medal ${S.badges[b[0]]?'got':''}" title="${esc(tr(b[1]))}">${svg(b[3])}</span>`).join(''))}
+  renderSurvey();if(!warmScreens.done){warmScreens.done=true;setTimeout(warmScreens,1200)}
   if(S.settings.stats===null&&doneCount()>=3&&!askedStats){askedStats=true;setTimeout(askStats,700)}}
+// Lays out the two biggest screens (Levels, Shop) in idle moments while the player is on Home,
+// so the first time they open they appear at once instead of stuttering.
+function warmScreens(){const idle=f=>(window.requestIdleCallback||(c=>setTimeout(c,300)))(f,{timeout:4000});
+  const jobs=[['levels',()=>{renderLS();lsGrid.offsetHeight}],['shop',()=>{renderShop();themes.offsetHeight}]];
+  const step=()=>{const j=jobs.shift();if(!j)return;if(current!==j[0])j[1]();idle(step)};idle(step)}
+// time left until midnight, for the Daily card (only ticks while Home is open)
+function tickHome(){const d=new Date(),m=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1),s=Math.max(0,Math.floor((m-d)/1000)),p=x=>String(x).padStart(2,'0');
+  hTimer.textContent=`${p(s/3600|0)}:${p((s/60|0)%60)}:${p(s%60)}`}
+setInterval(()=>{if(current==='home'&&!document.hidden)tickHome()},1000);
 function playCurrent(){startLevel(Math.min(S.unlocked,TOTAL))}
 function zen(){const n=1+Math.floor(Math.random()*Math.min(TOTAL,Math.max(S.unlocked,PER)));zenMode=true;dailyMode=false;loadLevel(n);go('game')}
 
@@ -1249,9 +1385,9 @@ let lsW=null;
 function renderLS(){if(lsW===null)lsW=worldOf(Math.min(S.unlocked,TOTAL));const a=lsW*PER+1,z=Math.min(a+PER-1,TOTAL);
   lsName.textContent=tr('World {n} · {name}',{n:lsW+1,name:tr(WORLD_INFO[lsW][0])});lsRange.textContent=`${tr('Levels {a}–{b}',{a:N(a),b:N(z)})} · ${tr(WORLD_INFO[lsW][1])}`;
   lsStars.innerHTML=svg('star','fill s18')+N(totalStars());
-  let h='';for(let n=a;n<=z;n++){const L=LV[n-1],ty=L[5],s=S.stars[n];const cls=s?'done':n===S.unlocked?'cur':isUnlocked(n)?'':'lock';
-    const dd=L[3],x=tierOf(dd);h+=`<button class="lv ${cls} ${ty===2?'boss':''}" style="--dc:${x[2]}" title="${tr(x[1])} · ${tr('difficulty {n}',{n:dd})}" onclick="startLevel(${n})" aria-label="${tr('Level {n}',{n})}, ${tr(x[1])}${s?', '+tr('{n} of 3 stars',{n:s}):isUnlocked(n)?'':', '+tr('locked')}${L[6]?', '+tr('frozen tube'):''}">${ty===1?'<span class="dot"></span>':''}${L[6]?svg('snow','fz'):''}${n}${s?starsHTML(s):'<span class="stars" aria-hidden="true">&nbsp;</span>'}</button>`}
-  setHTML(lsGrid,h)}
+  let h='';for(let n=a;n<=z;n++){if((n-a)%50===0)h+=(n>a?'</div>':'')+'<div class="lvgrid lvblock">';const L=LV[n-1],ty=L[5],s=S.stars[n];const cls=s?'done':n===S.unlocked?'cur':isUnlocked(n)?'':'lock';
+    const dd=L[3],x=tierOf(dd);h+=`<button class="lv ${cls} ${ty===2?'boss':''}" style="--dc:${x[2]}" title="${tr(x[1])} · ${tr('difficulty {n}',{n:dd})}" onclick="startLevel(${n})" aria-label="${tr('Level {n}',{n})}, ${tr(x[1])}${s?', '+tr('{n} of 3 stars',{n:s}):isUnlocked(n)?'':', '+tr('locked')}${L[6]?', '+tr('frozen tube'):''}">${ty===1?'<span class="dot"></span>':''}${L[6]?svg('snow','fz'):''}${n}<span class="stars" aria-hidden="true">${s?'★'.repeat(s)+'<i>'+'★'.repeat(3-s)+'</i>':'&nbsp;'}</span></button>`}
+  setHTML(lsGrid,h+'</div>')}
 function lsWorld(d){lsW=(lsW+d+NW)%NW;renderLS();document.querySelector('[data-id="levels"] .body').scrollTop=0}
 function lsJump(){const n=Math.floor(+lsGo.value);if(n>=1&&n<=TOTAL){lsW=worldOf(n);renderLS();startLevel(n)}else toast(tr('Enter a level from 1 to {n}',{n:N(TOTAL)}))}
 

@@ -66,6 +66,8 @@ for (const [name, w, h, dpr, mobile] of DEVICES) {
         else if (s === 'pause' || s === 'stuck') { loadLevel(137); go('game'); go(s); }
         else go(s);
       }, s);
+      // close any first-time message (frozen tube, stats question) so the screen itself is checked
+      await page.evaluate(() => { const d = document.getElementById('dialog'); if (d && d.classList.contains('on')) closeDialog(false); });
       await new Promise((r) => setTimeout(r, 450));
       const bad = await page.evaluate(overflowCheck);
       if (bad.length) problems.push(`${name} ${s}: ${bad.join(' | ')}`);
