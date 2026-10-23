@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Help &amp; Support — Marblume</title>
+<meta name="description" content="Help with Marblume: how to play, saving progress, and how to contact us.">
+<meta name="theme-color" content="#16213A">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/site.css">
+<style>
+:root{--ink:#16213A;--paper:#F4EEE3;--bloom:#FF5A36;--muted:rgba(22,33,58,.65);--line:rgba(22,33,58,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;line-height:1.6}
+main{max-width:760px;margin:0 auto;padding:32px 20px 40px}
+a{color:inherit}
+.back{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-family:'Fraunces',serif;font-weight:800;font-size:20px;margin-bottom:34px}
+.back img{width:32px;height:32px;border-radius:8px}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:800;font-size:clamp(34px,6vw,50px);line-height:1.1;margin-bottom:10px}
+h2{font-family:'Fraunces',Georgia,serif;font-weight:800;font-size:clamp(22px,4vw,28px);margin:40px 0 12px}
+p.lead{color:var(--muted);font-size:18px}
+details{background:#fff;border-radius:16px;padding:16px 20px;margin-bottom:10px;box-shadow:0 1px 2px rgba(22,33,58,.06)}
+summary{font-weight:700;cursor:pointer;font-size:16.5px}
+details p{color:var(--muted);margin-top:8px}
+form{background:#fff;border-radius:22px;padding:22px;box-shadow:0 1px 2px rgba(22,33,58,.06),0 8px 24px rgba(22,33,58,.06);display:grid;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+label{display:grid;gap:6px;font-weight:700;font-size:14px}
+label small{font-weight:500;color:var(--muted)}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1.5px solid transparent;border-radius:12px;padding:12px 14px;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--bloom)}
+textarea{min-height:150px;resize:vertical}
+button{font:inherit;font-weight:700;font-size:16px;border:0;border-radius:14px;padding:15px;background:var(--bloom);color:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(255,90,54,.3)}
+button[disabled]{opacity:.6;cursor:default}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.note{font-size:13px;color:var(--muted)}
+.status{border-radius:12px;padding:12px 14px;font-weight:600;display:none}
+.status.ok{display:block;background:rgba(107,170,117,.18);color:#2F6B3A}
+.status.err{display:block;background:rgba(255,90,54,.14);color:#B23A20}
+#mine{display:none}
+.conv{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 2px rgba(22,33,58,.06);display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:0;font:inherit;color:inherit;cursor:pointer}
+.conv .t{flex:1;min-width:0}.conv small{display:block;color:var(--muted);font-size:13px}
+.badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-radius:7px;padding:2px 8px;white-space:nowrap}
+.badge.new{background:var(--bloom);color:#fff}.badge.open{background:rgba(22,33,58,.08);color:var(--muted)}.badge.answered{background:rgba(63,122,73,.15);color:#2F6B3A}.badge.closed{background:rgba(22,33,58,.08);color:var(--muted)}
+#thread{display:none;background:#fff;border-radius:22px;box-shadow:0 1px 2px rgba(22,33,58,.06),0 8px 24px rgba(22,33,58,.06);overflow:hidden;margin-top:14px}
+.th-head{display:flex;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.th-head button{border:0;background:rgba(22,33,58,.07);border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;flex:none;box-shadow:none;padding:0;color:var(--ink)}
+.th-msgs{padding:16px;display:flex;flex-direction:column;gap:10px;max-height:min(60vh,520px);overflow-y:auto;background:var(--paper)}
+.bub{max-width:86%;padding:11px 14px;border-radius:16px;white-space:pre-wrap;word-break:break-word}
+.bub.user{align-self:flex-end;background:var(--ink);color:var(--paper);border-bottom-right-radius:5px}
+.bub.admin{align-self:flex-start;background:#fff;border-bottom-left-radius:5px;box-shadow:0 1px 2px rgba(22,33,58,.08)}
+.bub small{display:block;font-size:11.5px;opacity:.65;margin-top:5px}
+.th-reply{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);align-items:flex-end}
+.th-reply textarea{min-height:48px}
+.th-reply button{padding:12px 16px}
+.saved{background:rgba(107,170,117,.14);border-radius:14px;padding:12px 14px;font-size:14px;margin-top:12px;word-break:break-all}
+</style>
+</head>
+<body>
+<!--SITE-HEADER-->
+<main>
+<h1>Help &amp; Support</h1>
+<p class="lead">Answers to common questions, and a way to reach us if you need more help.</p>
+
+<h2>Common questions</h2>
+<div id="liveFaq"></div>
+<details><summary>How do I play?</summary><p>Tap a tube to lift its top ball, then tap the tube where it should go. A ball can only land on the same colour or in an empty tube. The level is finished when every tube holds one colour.</p></details>
+<details><summary>A level feels impossible.</summary><p>Every one of the 10,000 levels has been solved by computer, so there is always a way through. Use Undo freely (it is unlimited), take a hint (three free each day), or add one extra tube per level. Restarting is always free.</p></details>
+<details><summary>Where is my progress saved?</summary><p>On your device. Marblume has no accounts. To move your progress to a new phone, open Settings → Back up progress, keep the code it shows, then on the new device open Settings → Restore from a code and paste it. Deleting the game or clearing its data removes your progress.</p></details>
+<details><summary>What is a frozen tube?</summary><p>From World 2, some levels start with one spare tube frozen. The ice shows a colour: finish a tube of that colour and the ice melts, giving you an extra empty tube. Hint knows about frozen tubes too.</p></details>
+<details><summary>How do I start again from level 1?</summary><p>Open Settings (the gear icon) → Reset progress. This erases levels, stars, seeds, your collection and profile on that device.</p></details>
+<details><summary>How do I get seeds and unlock items?</summary><p>You earn seeds by playing: 4 per star the first time you finish a level, 50 every tenth level, 20 for each Daily Bloom, 200 for finishing every Daily Bloom in a month, and 25 to 500 for each badge. Spend them in the Shop. Some special items are earned through achievements instead.</p></details>
+<details><summary>Sound, vibration or animations are too much.</summary><p>Open Settings and switch off Sound, Haptics, or turn on Reduce motion. You will also find Relaxed play (an extra empty tube), Appearance (light or dark), Text size, Language, colour-blind symbols and a left-handed toolbar.</p></details>
+<details><summary>What does “Share anonymous game stats” send?</summary><p>Only if you said yes: for each level, the level number, moves, par, stars, hints, extra tubes, undos, time and whether you solved it, with a random code made by the app — never your name, email or location. Switch it off or delete it any time in Settings → Privacy.</p></details>
+
+<section id="mine"><h2>Your conversations</h2><div id="mineList"></div></section>
+<div id="thread" aria-live="polite"></div>
+
+<h2 id="contact">Contact us</h2>
+<p class="note" style="margin-bottom:14px">Found a bug, have an idea, or need help? Send us a message. Our reply appears right here on this page (this browser remembers your conversation). Add your email too if you would like us to let you know.</p>
+<form id="cf" novalidate>
+  <div class="two">
+    <label>Name <small>(optional)</small><input name="name" maxlength="80" autocomplete="name"></label>
+    <label>Email <small>(optional — needed for a reply)</small><input name="email" type="email" maxlength="120" autocomplete="email" inputmode="email"></label>
+  </div>
+  <div class="two">
+    <label>Topic<select name="topic"><option>Question</option><option>Bug report</option><option>Idea</option><option>Other</option></select></label>
+    <label>Device<select name="platform"><option value="">Choose…</option><option>Phone</option><option>Tablet</option><option>Computer</option></select></label>
+  </div>
+  <label>Message<textarea name="message" maxlength="3000" required placeholder="Tell us what happened or what you would like…"></textarea></label>
+  <div class="hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+  <div class="status" id="st" role="status" aria-live="polite"></div>
+  <button type="submit" id="send">Send message</button>
+  <p class="note">We use what you send only to answer you, and delete conversations 12 months after the last message. See our <a href="/privacy">privacy policy</a>.</p>
+</form>
+
+</main>
+<!--SITE-FOOTER-->
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const full = (iso) => new Date(iso).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const KEY = 'marblume.support';
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } };
+  const save = (list) => { try { localStorage.setItem(KEY, JSON.stringify(list.slice(0, 20))); } catch {} };
+  const remember = (id, token, topic) => { const old = load().find((x) => x.id === id); const l = load().filter((x) => x.id !== id); l.unshift({ id, token, topic: (old && old.topic) || topic, added: new Date().toISOString() }); save(l); };
+  let open = null, timer = null;
+
+  // ---------- your conversations ----------
+  async function renderMine() {
+    const list = load(); $('mine').style.display = list.length ? 'block' : 'none'; if (!list.length) return;
+    const rows = await Promise.all(list.map(async (x) => { try { const r = await fetch(`/api/tickets/${x.id}?token=${x.token}`); const j = await r.json(); return j.ok ? { ...x, topic: j.ticket.topic, t: j.ticket, fresh: j.newReply } : null; } catch { return { ...x, t: null }; } }));
+    const ok = rows.filter(Boolean); save(ok.map(({ id, token, topic, added }) => ({ id, token, topic, added })));
+    $('mine').style.display = ok.length ? 'block' : 'none';
+    $('mineList').innerHTML = ok.map((x) => { const t = x.t, last = t && t.messages[t.messages.length - 1];
+      return `<button class="conv" data-id="${x.id}"><span class="t"><b>${esc(x.topic || 'Message')}</b> <span style="color:var(--muted);font-size:13px">#${x.id}</span><small>${last ? (last.sender === 'admin' ? 'Marblume: ' : 'You: ') + esc(last.body.slice(0, 90)) : 'Tap to open'}</small></span>${x.fresh ? '<span class="badge new">New reply</span>' : t ? `<span class="badge ${t.status}">${t.status === 'answered' ? 'Replied' : t.status === 'closed' ? 'Solved' : 'Waiting'}</span>` : ''}</button>`; }).join('');
+  }
+  $('mineList').addEventListener('click', (e) => { const b = e.target.closest('.conv'); if (b) openThread(b.dataset.id); });
+
+  // ---------- one conversation ----------
+  async function openThread(id, quiet) {
+    const x = load().find((y) => y.id === id); if (!x) return;
+    const r = await fetch(`/api/tickets/${id}?token=${x.token}`); const j = await r.json().catch(() => ({}));
+    if (!j.ok) { if (!quiet) alert(j.error || 'Could not open the conversation.'); return; }
+    const t = j.ticket, draft = quiet && $('thReply') ? $('thReply').value : '';
+    open = id; const th = $('thread'); th.style.display = 'block';
+    th.innerHTML = `<div class="th-head"><button id="thClose" aria-label="Close conversation">×</button><div style="flex:1;min-width:0"><b>${esc(t.topic)}</b> <span style="color:var(--muted);font-size:13px">#${t.id}</span><div style="font-size:13px;color:var(--muted)">${t.status === 'answered' ? 'Marblume replied' : t.status === 'closed' ? 'Marked as solved' : 'Waiting for a reply — we usually answer within a few days'}</div></div></div>
+      <div class="th-msgs" id="thMsgs">${t.messages.map((m) => `<div class="bub ${m.sender}">${esc(m.body)}<small>${m.sender === 'admin' ? 'Marblume support' : 'You'} · ${full(m.created)}</small></div>`).join('')}</div>
+      <form class="th-reply" id="thForm"><textarea id="thReply" maxlength="3000" placeholder="Write a reply…" aria-label="Your reply"></textarea><button type="submit">Send</button></form>`;
+    $('thReply').value = draft; const m = $('thMsgs'); m.scrollTop = m.scrollHeight;
+    $('thClose').onclick = () => { th.style.display = 'none'; open = null; clearInterval(timer); renderMine(); };
+    $('thForm').onsubmit = async (e) => { e.preventDefault(); const text = $('thReply').value.trim(); if (!text) return;
+      const b = e.target.querySelector('button'); b.disabled = true; b.textContent = 'Sending…';
+      const rr = await fetch(`/api/tickets/${id}/messages`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: x.token, text }) });
+      const jj = await rr.json().catch(() => ({})); b.disabled = false; b.textContent = 'Send';
+      if (jj.ok) { $('thReply').value = ''; openThread(id, true); } else alert(jj.error || 'Could not send.'); };
+    if (!quiet) { th.scrollIntoView({ behavior: 'smooth', block: 'start' }); clearInterval(timer); timer = setInterval(() => { if (!document.hidden && open === id) openThread(id, true); }, 20000); }
+  }
+
+  // ---------- new message ----------
+  const f = $('cf'), st = $('st'), btn = $('send'), t0 = Date.now();
+  const show = (cls, html) => { st.className = 'status ' + cls; st.innerHTML = html; };
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(f)); data.elapsed = Date.now() - t0;
+    if ((data.message || '').trim().length < 5) { show('err', 'Please write a short message.'); return; }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const r = await fetch('/api/tickets', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok && j.token) {
+        remember(j.id, j.token, data.topic); f.reset();
+        const link = `${location.origin}/support?t=${j.id}.${j.token}`;
+        show('ok', `Thank you — your message was sent. Our reply will appear under <b>Your conversations</b> at the top of this page.<div class="saved">Private link to your conversation (save it to check from another device):<br><a href="${link}">${link}</a></div>`);
+        renderMine(); openThread(j.id);
+      } else show('err', esc(j.error || 'Sorry, that did not send. Please try again.'));
+    } catch { show('err', 'No connection. Please check your internet and try again.'); }
+    btn.disabled = false; btn.textContent = 'Send message';
+  });
+
+  // a private link (?t=ID.TOKEN) opens that conversation and remembers it on this device
+  const p = new URLSearchParams(location.search).get('t');
+  if (p && /^[A-Z0-9]{6}\.[a-f0-9]{36}$/.test(p)) { const [id, token] = p.split('.'); remember(id, token, 'Message'); history.replaceState(null, '', '/support'); renderMine().then(() => openThread(id)); }
+  else renderMine();
+})();
+</script>
+</body>
+</html>

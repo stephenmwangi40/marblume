@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marblume — Hard Ball Sort Puzzle</title>
+<meta name="description" content="Marblume is a seriously hard ball-sort puzzle: 10,000 unique, solver-checked levels, frozen tubes, a daily puzzle calendar, 55 collectable items and unlimited undo. In 7 languages.">
+<meta property="og:title" content="Marblume — Sort the colours. Grow the garden.">
+<meta property="og:description" content="A seriously hard ball-sort puzzle. 10,000 unique levels, unlimited undo, no timers.">
+<meta property="og:image" content="/icon-512.png">
+<meta name="theme-color" content="#16213A">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/site.css">
+<style>
+:root{--ink:#16213A;--paper:#F4EEE3;--bloom:#FF5A36;--card:rgba(255,255,255,.62);--glass:inset 0 1px 0 rgba(255,255,255,.95),0 0 0 1px rgba(22,33,58,.06),0 8px 24px rgba(22,33,58,.06);--muted:rgba(22,33,58,.62);--line:rgba(22,33,58,.1);
+  --c1:#E8B04A;--c2:#3F7DB8;--c3:#E46B9E;--c4:#2EC4B6;--c5:#8C6650;--c6:#7A5CC2}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(60% 40% at 0% 0%,rgba(255,90,54,.1),transparent 70%),radial-gradient(50% 40% at 100% 20%,rgba(107,170,117,.12),transparent 70%),radial-gradient(60% 40% at 50% 70%,rgba(62,124,177,.08),transparent 70%) fixed,var(--paper);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:800;line-height:1.08;letter-spacing:-.01em}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.wrap{max-width:1120px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;border-radius:999px;font-weight:700;text-decoration:none;font-size:16px;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--bloom);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 24px rgba(255,90,54,.3)}
+.btn.dark{background:var(--ink);color:var(--paper);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 24px rgba(22,33,58,.2)}
+.btn.ghost{background:rgba(22,33,58,.07)}
+.btn small{display:block;font-weight:500;font-size:12px;opacity:.75}
+.btn .t{display:flex;flex-direction:column;line-height:1.2;text-align:left}
+.btn[aria-disabled=true]{opacity:.55;pointer-events:none}
+/* hero */
+.hero{padding:72px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:13px;font-weight:700;color:var(--bloom);margin-bottom:16px}
+.hero h1{font-size:clamp(44px,7vw,80px)}
+.hero p.lead{font-size:20px;color:var(--muted);margin:22px 0 30px;max-width:520px}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.note{font-size:13.5px;color:var(--muted);margin-top:14px}
+.phone{justify-self:center;width:min(320px,80vw);aspect-ratio:9/18.4;border-radius:44px;background:var(--ink);padding:12px;box-shadow:0 40px 80px rgba(22,33,58,.28);transform:rotate(2deg)}
+.phone img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:34px;display:block;background:var(--paper)}
+@media(max-width:860px){.hero{padding-top:40px}.hero .wrap{grid-template-columns:1fr;gap:40px}.phone{transform:none}}
+/* live demo: a small board that sorts itself */
+.demo{display:flex;flex-direction:column;align-items:center;gap:12px;margin:30px 0 10px}
+.demo .board{display:flex;justify-content:center;gap:14px;min-height:140px;align-items:flex-end}
+.tube{width:38px;height:128px;border:3px solid var(--ink);border-radius:8px 8px 20px 20px;display:flex;flex-direction:column-reverse;align-items:center;padding:4px 0;gap:3px;background:rgba(255,255,255,.55);transition:border-color .3s,background .3s,transform .3s}
+.tube.done{border-color:var(--bloom);background:rgba(255,90,54,.08)}
+.tube.lift{transform:translateY(-8px)}
+.tube i{width:26px;height:26px;border-radius:50%;display:block;box-shadow:inset -3px -4px 0 rgba(0,0,0,.15);flex:none}
+.demo .cap{font-size:13.5px;color:var(--muted)}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:40px 0 20px}
+.stat,.f,.g,details,.avs span{backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--glass)}
+.stat{background:var(--card);border-radius:24px;padding:22px}
+.stat b{font-family:'Fraunces',serif;font-size:36px;display:block}
+.stat span{color:var(--muted);font-size:14.5px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+section{padding:70px 0}
+section h2{font-size:clamp(32px,4.5vw,48px);margin-bottom:14px}
+section .sub{color:var(--muted);font-size:18px;max-width:620px;margin-bottom:36px}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.f{background:var(--card);border-radius:26px;padding:26px}
+.f .ic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;margin-bottom:16px;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.f .ic svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.f h3{font-size:21px;margin-bottom:8px}
+.f p{color:var(--muted);font-size:15.5px}
+@media(max-width:860px){.features{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.features{grid-template-columns:1fr}}
+.shots{display:flex;gap:20px;overflow-x:auto;padding:6px 4px 20px;scroll-snap-type:x mandatory}
+.shots figure{flex:none;width:260px;scroll-snap-align:start}
+.shots img{width:100%;border-radius:26px;box-shadow:0 18px 40px rgba(22,33,58,.18);display:block}
+.shots figcaption{text-align:center;color:var(--muted);font-size:14px;margin-top:12px}
+.dark-band{background:var(--ink);color:var(--paper)}
+.dark-band .sub{color:rgba(244,238,227,.68)}
+.worlds{display:flex;flex-wrap:wrap;gap:8px}
+.worlds span{background:rgba(244,238,227,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);padding:8px 14px;border-radius:999px;font-size:14.5px}
+.worlds span b{color:var(--bloom);font-weight:700;margin-right:6px}
+.get{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.g{background:var(--card);border-radius:26px;padding:28px;display:flex;flex-direction:column;gap:12px}
+.g h3{font-size:24px}
+.g p{color:var(--muted);font-size:15px;flex:1}
+.tag{align-self:flex-start;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:5px 10px;border-radius:999px;background:rgba(46,196,182,.15);color:#178a80}
+.tag.soon{background:rgba(22,33,58,.08);color:var(--muted)}
+@media(max-width:860px){.get{grid-template-columns:1fr}}
+details{background:var(--card);border-radius:18px;padding:18px 22px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer;font-size:17px}
+details p{color:var(--muted);margin-top:10px}
+.split{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.phone.sm{width:min(280px,72vw);transform:rotate(-2deg)}
+.avs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:6px 0 24px;max-width:460px}
+.avs span{background:var(--card);border-radius:18px;padding:10px 4px 8px;text-align:center;line-height:1.1}
+.avs img{width:min(56px,100%);height:auto;display:block;margin:0 auto}
+.avs b{display:block;font-size:12px;font-family:'DM Sans',sans-serif;margin-top:6px;color:var(--muted)}
+.ticks{list-style:none;display:grid;gap:10px}
+.ticks li{padding-left:30px;position:relative;font-size:16.5px}
+.ticks li:before{content:"✓";position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:var(--bloom);color:#fff;font-size:13px;display:grid;place-items:center;font-weight:700}
+@media(max-width:860px){.split{grid-template-columns:1fr;gap:36px}.phone.sm{transform:none}}
+@media(max-width:420px){.avs{gap:6px}.avs span{border-radius:14px}.btn{width:100%;justify-content:center}.actions{flex-direction:column}}
+@media (prefers-reduced-transparency:reduce){:root{--card:#fff}.stat,.f,.g,details,.avs span{backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(min-width:1600px){.wrap{max-width:1280px}.hero h1{font-size:88px}}
+
+</style>
+</head>
+<body>
+<!--SITE-HEADER-->
+
+<main>
+<div class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow">A seriously hard ball-sort puzzle</div>
+    <h1>Sort the colours.<br>Grow the garden.</h1>
+    <p class="lead">Marblume is a ball-sort puzzle for players who want a real challenge. Every level has its own board: 5 to 12 colours, tubes that hold 3 to 7 balls, and one to three spare tubes. It starts hard on level 1 and climbs from there. Pour marbles between tubes until every tube holds one colour, and watch a flower bloom every ten levels.</p>
+    <div class="actions">
+      <a class="btn primary" href="/download/Marblume-{{VERSION}}.apk" download><span class="t">Download for Android<small>APK · v{{VERSION}} · 4 MB</small></span></a>
+      <a class="btn dark" href="/play/"><span class="t">Play in your browser<small>No install needed</small></span></a>
+    </div>
+    <p class="note">iPhone &amp; iPad and Google Play versions are on their way.</p>
+  </div>
+  <div class="phone"><img src="/img/home.webp" alt="Marblume home screen showing the next level and game modes"></div>
+</div></div>
+
+<div class="wrap">
+  <div class="demo" role="img" aria-label="A short animation: coloured balls are poured between tubes until every tube holds one colour">
+    <div class="board" id="demo" aria-hidden="true"></div>
+    <div class="cap">How it plays: pour the top ball onto the same colour or into an empty tube.</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>10,000</b><span>unique levels, every one solver-checked</span></div>
+    <div class="stat"><b>20</b><span>worlds with their own twist</span></div>
+    <div class="stat"><b>3–7</b><span>balls per tube, different every level</span></div>
+    <div class="stat"><b>55</b><span>balls, tubes, shapes, scenes &amp; effects to collect</span></div>
+  </div>
+</div>
+
+<section id="features"><div class="wrap">
+  <h2>Hard, but always fair.</h2>
+  <p class="sub">Every level is a real puzzle, but nothing is unfair: no timers, no lives, and every board is proven solvable before it ships.</p>
+  <div class="features">
+    <div class="f"><div class="ic" style="background:var(--bloom)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.12 18.31H15.12C17.88 18.31 20.12 16.07 20.12 13.31C20.12 10.55 17.88 8.31 15.12 8.31H4.12"/><path d="M6.43 10.81L3.87 8.25L6.43 5.69"/></svg></div><h3>Unlimited undo</h3><p>Hard puzzles need room to experiment. Every move can be taken back for free, and you can restart any time.</p></div>
+    <div class="f"><div class="ic" style="background:var(--c2)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"/><path d="M7.75 12L10.58 14.83L16.25 9.17"/></svg></div><h3>Always solvable</h3><p>Every one of the 10,000 boards was solved by computer before shipping, no two are alike, and each has a par so you know how well you did.</p></div>
+    <div class="f"><div class="ic" style="background:var(--c4)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.17 10.06H7.83C6.65 10.06 6.24 9.27 6.93 8.31L11.10 2.47C11.59 1.77 12.41 1.77 12.89 2.47L17.06 8.31C17.76 9.27 17.35 10.06 16.17 10.06Z"/><path d="M17.59 18H6.42C4.84 18 4.30 16.95 5.23 15.67L9.22 10.06H14.79L18.78 15.67C19.71 16.95 19.17 18 17.59 18Z"/><path d="M12 22V18"/></svg></div><h3>Grow a garden</h3><p>Earn a new flower every ten levels and fill your garden. Stars and seeds reward tidy solutions.</p></div>
+    <div class="f"><div class="ic" style="background:var(--c1)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18.5C15.58 18.5 18.5 15.58 18.5 12C18.5 8.41 15.58 5.5 12 5.5C8.41 5.5 5.5 8.41 5.5 12C5.5 15.58 8.41 18.5 12 18.5Z"/><path d="M19.14 19.14L19.01 19.01M19.01 4.99L19.14 4.86L19.01 4.99ZM4.86 19.14L4.99 19.01L4.86 19.14ZM12 2.08V2V2.08ZM12 22V21.92V22ZM2.08 12H2H2.08ZM22 12H21.92H22ZM4.99 4.99L4.86 4.86L4.99 4.99Z"/></svg></div><h3>Daily Bloom</h3><p>A fresh puzzle every day on a monthly calendar. Catch up on days you missed, keep your streak, and finish a whole month for a bonus.</p></div>
+    <div class="f"><div class="ic" style="background:#5AA7D6"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5V3"/><path d="M12 21V15.5"/><path d="M10 3H14"/><path d="M10 21H14"/><path d="M8.97 10.25L4.21 7.5"/><path d="M19.79 16.5L15.03 13.75"/><path d="M3.21 9.23L5.21 5.77"/><path d="M18.79 18.23L20.79 14.77"/><path d="M15.5 12C15.5 12.64 15.33 13.23 15.03 13.75C14.42 14.8 13.29 15.5 12 15.5C10.71 15.5 9.58 14.8 8.97 13.75C8.67 13.23 8.5 12.64 8.5 12C8.5 11.36 8.67 10.77 8.97 10.25C9.58 9.2 10.71 8.5 12 8.5C13.29 8.5 14.42 9.2 15.03 10.25C15.33 10.77 15.5 11.36 15.5 12Z"/><path d="M19.79 7.5L15.03 10.25"/><path d="M8.97 13.75L4.21 16.5"/><path d="M20.79 9.23L18.79 5.77"/><path d="M5.21 18.23L3.21 14.77"/></svg></div><h3>Frozen tubes</h3><p>From World 2, some spare tubes start frozen. Finish the colour shown on the ice to melt it and win an extra tube.</p></div>
+    <div class="f"><div class="ic" style="background:var(--c3)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.57 11.99C15.57 13.97 13.97 15.57 11.99 15.57C10.01 15.57 8.41 13.97 8.41 11.99C8.41 10.01 10.01 8.41 11.99 8.41C13.97 8.41 15.57 10.01 15.57 11.99Z"/><path d="M12.00 20.27C15.53 20.27 18.82 18.19 21.11 14.59C22.01 13.18 22.01 10.81 21.11 9.40C18.82 5.80 15.53 3.72 12.00 3.72C8.47 3.72 5.18 5.80 2.89 9.40C1.99 10.81 1.99 13.18 2.89 14.59C5.18 18.19 8.47 20.27 12.00 20.27Z"/></svg></div><h3>Made for everyone</h3><p>Colour-blind symbols on every ball, dark mode, larger text, a left-handed layout and a Relaxed mode with an extra tube.</p></div>
+    <div class="f"><div class="ic" style="background:var(--c6)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.06 18.67L16.92 14.4L14.78 18.67"/><path d="M15.17 17.90H18.69"/><path d="M16.92 22.00C14.12 22.00 11.84 19.73 11.84 16.92C11.84 14.12 14.11 11.84 16.92 11.84C19.72 11.84 22.00 14.11 22.00 16.92C22.00 19.73 19.73 22.00 16.92 22.00Z"/><path d="M5.02 2H8.94C11.01 2 12.01 3.00 11.96 5.02V8.94C12.01 11.01 11.01 12.01 8.94 11.96H5.02C3.00 12 2.00 11 2.00 8.92V5.01C2.00 3.00 3.00 2 5.02 2Z"/><path d="M9.01 5.84H4.95"/><path d="M6.97 5.16V5.84"/><path d="M7.99 5.83C7.99 7.58 6.62 9.00 4.94 9.00"/><path d="M9.01 9.01C8.28 9.01 7.62 8.62 7.16 8"/><path d="M2.00 15C2.00 18.87 5.13 22 9.00 22L7.95 20.25"/><path d="M22.00 9C22.00 5.13 18.87 2 15.00 2L16.05 3.75"/></svg></div><h3>Seven languages</h3><p>English, Español, Português, Français, Deutsch, Bahasa Indonesia and हिन्दी — it follows your phone, or pick one in Settings.</p></div>
+    <div class="f"><div class="ic" style="background:var(--c5)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9C19 10.45 18.57 11.78 17.83 12.89C16.75 14.49 15.04 15.62 13.05 15.91C12.71 15.97 12.36 16 12 16C11.64 16 11.29 15.97 10.95 15.91C8.96 15.62 7.25 14.49 6.17 12.89C5.43 11.78 5 10.45 5 9C5 5.13 8.13 2 12 2C15.87 2 19 5.13 19 9Z"/><path d="M21.25 18.46L19.60 18.85C19.23 18.94 18.94 19.22 18.86 19.59L18.51 21.06C18.32 21.86 17.30 22.10 16.77 21.47L12.00 15.99L7.23 21.48C6.70 22.11 5.68 21.87 5.49 21.07L5.14 19.60C5.05 19.23 4.76 18.94 4.40 18.86L2.75 18.47C1.99 18.29 1.72 17.34 2.27 16.79L6.17 12.89C7.25 14.49 8.96 15.62 10.95 15.91C11.29 15.97 11.64 16.00 12.00 16.00C12.36 16.00 12.71 15.97 13.05 15.91C15.04 15.62 16.75 14.49 17.83 12.89L21.73 16.79C22.28 17.33 22.01 18.28 21.25 18.46Z"/><path d="M12.58 5.98L13.17 7.15C13.25 7.31 13.46 7.48 13.65 7.51L14.72 7.68C15.4 7.79 15.56 8.3 15.07 8.79L14.24 9.61C14.1 9.75 14.02 10.03 14.07 10.23L14.31 11.26C14.5 12.07 14.07 12.39 13.35 11.96L12.35 11.37C12.17 11.26 11.87 11.26 11.69 11.37L10.69 11.96C9.96 12.38 9.53 12.07 9.72 11.26L9.96 10.23C10.01 10.04 9.93 9.75 9.79 9.61L8.96 8.79C8.47 8.3 8.63 7.80 9.31 7.68L10.39 7.51C10.57 7.48 10.78 7.31 10.86 7.15L11.45 5.98C11.74 5.34 12.26 5.34 12.58 5.98Z"/></svg></div><h3>20 badges</h3><p>Badges for streaks, perfect solves, thawing ice and more — each one pays out seeds to spend in the Shop.</p></div>
+    <div class="f"><div class="ic" style="background:var(--ink)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.03 21.69L11.36 19.73C11.71 19.43 12.29 19.43 12.64 19.73L14.97 21.69C15.51 21.96 16.17 21.69 16.37 21.11L16.81 19.78C16.92 19.46 16.81 18.99 16.57 18.75L14.30 16.47C14.13 16.31 14.00 15.99 14.00 15.76V12.91C14.00 12.49 14.31 12.29 14.70 12.45L19.61 14.57C20.38 14.9 21.01 14.49 21.01 13.65V12.36C21.01 11.69 20.51 10.92 19.89 10.66L14.30 8.25C14.14 8.18 14.00 7.97 14.00 7.79V4.79C14.00 3.85 13.31 2.74 12.47 2.31C12.17 2.16 11.82 2.16 11.52 2.31C10.68 2.74 9.99 3.86 9.99 4.80V7.80C9.99 7.98 9.85 8.19 9.69 8.26L4.11 10.67C3.49 10.92 2.99 11.69 2.99 12.36V13.65C2.99 14.49 3.62 14.9 4.39 14.57L9.30 12.45C9.68 12.28 10.00 12.49 10.00 12.91V15.76C10.00 15.99 9.87 16.31 9.71 16.47L7.44 18.75C7.20 18.99 7.09 19.45 7.20 19.78L7.64 21.11C7.82 21.69 8.48 21.97 9.03 21.69Z"/></svg></div><h3>Plays offline</h3><p>No account needed and every level works without internet. A backup code moves your progress to a new phone.</p></div>
+  </div>
+</div></section>
+
+<section id="collect" style="padding-top:0"><div class="wrap">
+  <h2>A look inside.</h2>
+  <p class="sub">Clean boards, big touch targets, and gentle feedback when a tube is finished.</p>
+  <div class="shots">
+    <figure><img src="/img/home.webp" alt="Home screen" loading="lazy"><figcaption>Pick up where you left off</figcaption></figure>
+    <figure><img src="/img/game.webp" alt="A hard puzzle board with many colours" loading="lazy"><figcaption>Hard from level 1</figcaption></figure>
+    <figure><img src="/img/win.webp" alt="Level complete screen with stars and falling petals" loading="lazy"><figcaption>It bloomed!</figcaption></figure>
+    <figure><img src="/img/profile.webp" alt="Profile screen with avatar, rank and badges" loading="lazy"><figcaption>Your profile &amp; avatar</figcaption></figure>
+    <figure><img src="/img/garden.webp" alt="Garden screen filling with flowers" loading="lazy"><figcaption>Grow your garden</figcaption></figure>
+    <figure><img src="/img/shop.webp" alt="Shop with collectable ball styles" loading="lazy"><figcaption>Collect ball styles</figcaption></figure>
+    <figure><img src="/img/gameNight.webp" alt="A 12-colour board with neon balls on a night-sky background" loading="lazy"><figcaption>Neon balls · Night sky</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="profile" style="padding-top:0"><div class="wrap split">
+  <div>
+    <h2>Make it yours.</h2>
+    <p class="sub">Pick one of ten garden friends, give yourself a name and a ring colour, and watch your rank grow from Seed to Legend as you play.</p>
+    <div class="avs" aria-label="The ten avatars">
+      <span><img src="/avatars/fox.svg" alt="" width="56" height="56"><b>Fox</b></span>
+      <span><img src="/avatars/cat.svg" alt="" width="56" height="56"><b>Cat</b></span>
+      <span><img src="/avatars/owl.svg" alt="" width="56" height="56"><b>Owl</b></span>
+      <span><img src="/avatars/panda.svg" alt="" width="56" height="56"><b>Panda</b></span>
+      <span><img src="/avatars/frog.svg" alt="" width="56" height="56"><b>Frog</b></span>
+      <span><img src="/avatars/bunny.svg" alt="" width="56" height="56"><b>Bunny</b></span>
+      <span><img src="/avatars/bear.svg" alt="" width="56" height="56"><b>Bear</b></span>
+      <span><img src="/avatars/penguin.svg" alt="" width="56" height="56"><b>Penguin</b></span>
+      <span><img src="/avatars/bee.svg" alt="" width="56" height="56"><b>Bee</b></span>
+      <span><img src="/avatars/koala.svg" alt="" width="56" height="56"><b>Koala</b></span>
+    </div>
+    <ul class="ticks">
+      <li>Nine ranks, from <b>Seed</b> to <b>Legend</b></li>
+      <li>Twenty badges to earn, each with a seed reward</li>
+      <li>Your stats and a moves-vs-par chart</li>
+      <li>55 collectables: ball styles, tubes, tube shapes, scenes and win effects, with a record of how you got each one</li>
+      <li>Stays on your device, no account needed — with a backup code for new phones</li>
+    </ul>
+  </div>
+  <div class="phone sm"><img src="/img/profile.webp" alt="Marblume profile screen" loading="lazy"></div>
+</div></section>
+
+<section id="worlds" class="dark-band"><div class="wrap">
+  <h2>Twenty worlds. One garden.</h2>
+  <p class="sub">Each world brings 500 levels and a new idea — frozen tubes, hidden marbles, taller tubes, a single spare tube — with a slightly gentler breather every ten levels and a boss every twenty-five.</p>
+  <div class="worlds">
+    <span><b>1</b>Seedling</span><span><b>2</b>Sprout</span><span><b>3</b>Meadow</span><span><b>4</b>Grove</span><span><b>5</b>Orchard</span>
+    <span><b>6</b>Tide</span><span><b>7</b>Summit</span><span><b>8</b>Canyon</span><span><b>9</b>Aurora</span><span><b>10</b>Cosmos</span>
+    <span><b>11</b>Savanna</span><span><b>12</b>Monsoon</span><span><b>13</b>Glacier</span><span><b>14</b>Lantern</span><span><b>15</b>Prism</span>
+    <span><b>16</b>Harbor</span><span><b>17</b>Nebula</span><span><b>18</b>Eclipse</span><span><b>19</b>Zenith</span><span><b>20</b>Infinity</span>
+  </div>
+</div></section>
+
+<section id="get"><div class="wrap">
+  <h2>Get Marblume.</h2>
+  <p class="sub">Free to play. No sign-up.</p>
+  <div class="get">
+    <div class="g"><span class="tag">Available now</span><h3>Android</h3><p>Download and install the APK directly. Your phone may ask you to allow installs from your browser the first time. Requires Android 7.0 or newer.</p>
+      <a class="btn primary" href="/download/Marblume-{{VERSION}}.apk" download>Download APK</a></div>
+    <div class="g"><span class="tag">Available now</span><h3>Web</h3><p>Play the full game in any modern browser on phone, tablet or computer. Progress is saved in that browser.</p>
+      <a class="btn dark" href="/play/">Play now</a></div>
+    <div class="g"><span class="tag soon">Coming soon</span><h3>iPhone, iPad &amp; Google Play</h3><p>Marblume is heading to the App Store and Google Play. Until then, iPhone players can use the web version — tap Share → Add to Home Screen.</p>
+      <a class="btn ghost" aria-disabled="true">Coming soon</a></div>
+  </div>
+</div></section>
+
+<section id="faq" style="padding-top:0"><div class="wrap">
+  <h2>Questions.</h2>
+  <details><summary>How do I play?</summary><p>Tap a tube to lift its top marble, then tap the tube you want to pour it into. A marble can only go onto the same colour or into an empty tube. Finish when every tube holds a single colour.</p></details>
+  <details><summary>How hard is it?</summary><p>Hard from the start, and harder as you go. Every level has its own setup (5 to 12 colours, tubes of 3 to 7 balls, one to three spare tubes, sometimes hidden balls), so no two levels look or play the same. Each level shows its difficulty: Hard, Very hard, Expert or Master. Every level is still guaranteed solvable, and undo is unlimited.</p></details>
+  <details><summary>What can I collect?</summary><p>Fifty-five items: 19 ball styles (Gems, Neon, Galaxy, Pool…), 13 tube styles (Wood, Ice, Gold, Bamboo…), 4 tube shapes (Round, Jar, Capsule, Flask), 14 game scenes (Meadow, Aurora, Deep space, Coral reef…) and 5 win effects (Petals, Confetti, Hearts, Leaves, Stars). Most are bought with seeds you earn by playing; 11 special ones, like Galaxy, Ruby and Aurora, are earned through achievements. Your collection shows how and when you got each one.</p></details>
+  <details><summary>Is it free?</summary><p>Yes, Marblume is free to play, with no timers and no lives. Seeds you earn by playing unlock collectables and extra hints.</p></details>
+  <details><summary>I'm stuck — what now?</summary><p>Use Undo as much as you like, take a hint (three free each day), or add one extra tube per level. Every level has been solved by computer, so there is always a way through.</p></details>
+  <details><summary>Does Marblume collect my data?</summary><p>Only if you say yes. Your progress stays on your device. If you tap “Share”, the game sends anonymous results (level, moves, hints, time) with a random code, to help us balance the puzzles — never your name, email or location. You can switch it off and delete it in Settings. See the <a href="/privacy">privacy policy</a>.</p></details>
+  <details><summary>Android says the APK is from an unknown source.</summary><p>That is normal for apps installed outside Google Play. Allow your browser to install apps when asked, then open the downloaded file. The app is signed and only asks for internet (for the optional stats and surveys) and vibration.</p></details>
+</div></section>
+</main>
+
+<!--SITE-FOOTER-->
+<script>
+// Live demo: a small board solves itself (shortest solution found in the browser), then starts again.
+(() => {
+  const el = document.getElementById('demo'); if (!el) return;
+  const COL = ['var(--c2)', 'var(--c1)', 'var(--c3)'], CAP = 4, START = [[0, 1, 0, 2], [1, 2, 1, 0], [2, 0, 2, 1], [], []];
+  const key = (T) => T.map((t) => t.join('')).join('|');
+  const done = (T) => T.every((t) => !t.length || (t.length === CAP && t.every((x) => x === t[0])));
+  function solve() { // breadth-first: shortest list of single-ball moves
+    const seen = new Map([[key(START), null]]); let q = [START];
+    while (q.length) { const nx = []; for (const T of q) { if (done(T)) { const path = []; let k = key(T); while (seen.get(k)) { const [p, m] = seen.get(k); path.unshift(m); k = p; } return path; }
+      for (let a = 0; a < T.length; a++) { const A = T[a]; if (!A.length) continue; for (let b = 0; b < T.length; b++) { const B = T[b]; if (a === b || B.length >= CAP || (B.length && B[B.length - 1] !== A[A.length - 1])) continue;
+        const N = T.map((t) => t.slice()); N[b].push(N[a].pop()); const k = key(N); if (seen.has(k)) continue; seen.set(k, [key(T), [a, b]]); nx.push(N); } } } q = nx; }
+    return []; }
+  const MOVES = solve();
+  const draw = (T) => { el.innerHTML = T.map((t) => `<div class="tube">${t.map((c) => `<i style="background:${COL[c]}"></i>`).join('')}</div>`).join(''); };
+  draw(START);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !Element.prototype.animate) return; // still picture for reduced motion
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function loop() {
+    for (;;) {
+      const T = START.map((t) => t.slice()); draw(T); el.style.opacity = 1; await wait(900);
+      for (const [a, b] of MOVES) {
+        const ta = el.children[a], tb = el.children[b], ball = ta.lastElementChild;
+        ta.classList.add('lift'); await wait(260);
+        const r1 = ball.getBoundingClientRect(); tb.appendChild(ball); ta.classList.remove('lift'); const r2 = ball.getBoundingClientRect();
+        const dx = r1.left - r2.left, dy = r1.top - r2.top, up = Math.min(0, -dy) - 46;
+        await ball.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: `translate(${dx * 0.5}px,${Math.min(dy, 0) + up}px)`, offset: 0.45 }, { transform: 'translate(0,0)' }], { duration: 520, easing: 'ease-in-out' }).finished;
+        T[b].push(T[a].pop());
+        if (T[b].length === CAP && T[b].every((x) => x === T[b][0])) tb.classList.add('done');
+        await wait(260);
+      }
+      await wait(1800); el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'forwards' }); await wait(420);
+    }
+  }
+  // only animate while it is on screen
+  let started = false; new IntersectionObserver((e) => { if (e[0].isIntersecting && !started) { started = true; loop(); } }).observe(el);
+})();
+</script>
+</body>
+</html>

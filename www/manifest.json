@@ -1,0 +1,15 @@
+{
+  "name": "Marblume",
+  "short_name": "Marblume",
+  "description": "A calm ball-sort puzzle. 10,000 levels, unlimited undo, no ads.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#16213A",
+  "theme_color": "#16213A",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

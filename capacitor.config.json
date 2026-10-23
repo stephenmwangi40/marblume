@@ -1,0 +1,28 @@
+{
+  "appId": "com.marblume.ballsort",
+  "appName": "Marblume",
+  "webDir": "www",
+  "backgroundColor": "#16213A",
+  "android": {
+    "backgroundColor": "#16213A",
+    "allowMixedContent": false
+  },
+  "ios": {
+    "backgroundColor": "#16213A",
+    "contentInset": "never",
+    "scrollEnabled": false,
+    "allowsLinkPreview": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "launchAutoHide": true,
+      "backgroundColor": "#16213A",
+      "showSpinner": false
+    },
+    "SystemBars": {
+      "insetsHandling": "css",
+      "style": "DARK"
+    }
+  }
+}

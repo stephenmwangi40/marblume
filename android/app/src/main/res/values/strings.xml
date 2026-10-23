@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Marblume</string>
+    <string name="title_activity_main">Marblume</string>
+    <string name="package_name">com.marblume.ballsort</string>
+    <string name="custom_url_scheme">com.marblume.ballsort</string>
+</resources>
