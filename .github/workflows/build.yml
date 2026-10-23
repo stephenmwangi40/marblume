@@ -23,33 +23,37 @@ permissions:
   contents: write
 
 jobs:
+  # Skipped without the signing secrets (the APK/AAB can also be built locally, see README).
   android:
     runs-on: ubuntu-latest
+    env:
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
+        if: env.HAS_KEY == 'true'
       - uses: actions/setup-node@v4
+        if: env.HAS_KEY == 'true'
         with: { node-version: 22, cache: npm }
       - uses: actions/setup-java@v4
+        if: env.HAS_KEY == 'true'
         with: { distribution: temurin, java-version: 21, cache: gradle }
-      - run: npm ci
-      - run: npm run sync
-      - name: Signing key
+      - name: Build signed APK + AAB
+        if: env.HAS_KEY == 'true'
         env:
           KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          test -n "$KEYSTORE" || { echo "::error::ANDROID_KEYSTORE_BASE64 secret is missing"; exit 1; }
+          npm ci && npm run sync
           mkdir -p android/keystore
           echo "$KEYSTORE" | base64 --decode > android/keystore/marblume-upload.jks
           printf 'storeFile=../keystore/marblume-upload.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             '${{ secrets.ANDROID_STORE_PASSWORD }}' '${{ secrets.ANDROID_KEY_ALIAS }}' '${{ secrets.ANDROID_KEY_PASSWORD }}' > android/keystore.properties
-      - run: cd android && chmod +x gradlew && ./gradlew assembleRelease bundleRelease --no-daemon
-      - name: Collect
-        run: |
+          (cd android && chmod +x gradlew && ./gradlew assembleRelease bundleRelease --no-daemon)
           V=$(node -p "require('./package.json').version")
           mkdir -p out
           cp android/app/build/outputs/apk/release/app-release.apk out/Marblume-$V.apk
           cp android/app/build/outputs/bundle/release/app-release.aab out/Marblume-$V.aab
       - uses: actions/upload-artifact@v4
+        if: env.HAS_KEY == 'true'
         with: { name: android, path: out/* }
 
   ios:
@@ -100,6 +104,7 @@ jobs:
 
   release:
     needs: [android, ios]
+    if: ${{ !cancelled() && needs.ios.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
