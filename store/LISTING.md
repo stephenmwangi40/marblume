@@ -1,4 +1,4 @@
-# Marblume — store listing kit (version 1.9.0)
+# Marblume — store listing kit (version 1.10.0)
 
 Everything below is ready to paste. Images are in `store/play/` and `store/appstore/`, videos in `store/video/`.
 
@@ -61,7 +61,7 @@ Seeds are earned by playing. Your progress stays on your device. Sharing anonymo
 **Category:** Game → Puzzle · **Tags:** Puzzle, Casual, Logic, Brain games
 **Contains ads:** No (change to Yes in the same release that adds AdMob) · **In-app purchases:** No
 
-### Data safety form (version 1.9.0)
+### Data safety form (version 1.10.0)
 - Does your app collect or share any of the required user data types? **Yes**
 - Is all of the user data collected by your app encrypted in transit? **Yes** (HTTPS)
 - Do you provide a way for users to request that their data is deleted? **Yes** — in the app: Settings → Delete my shared stats (and the website Support page)
@@ -127,7 +127,12 @@ Already answered in the app (`ITSAppUsesNonExemptEncryption = NO`): the app only
 
 ---
 
-## What's new in 1.9.0 (paste into both stores)
+## What's new in 1.10.0 (paste into both stores)
+• A clean new look in solid colours: no colour blends anywhere
+• Marbles and glass tubes drawn in crisp 3D, with a rim on every tube
+• Daily Bloom fits on one screen on iPad in landscape
+
+## What's new in 1.9.0
 • 3D marbles and glass tubes that catch the light
 • Clearer liquid glass across the app
 • Faster and smoother, especially on older phones

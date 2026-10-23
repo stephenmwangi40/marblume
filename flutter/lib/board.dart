@@ -98,8 +98,7 @@ class _BoardState extends State<Board> with SingleTickerProviderStateMixin {
           }
           // reflection streak in front of the balls
           children.add(Positioned(left: pos[i].dx + f.tw * .16, top: pos[i].dy + up + 10, width: f.tw * .13, height: th - 10 - f.tw / 3,
-              child: const IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(99)),
-                  gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xB3FFFFFF), Color(0x1FFFFFFF), Color(0x00FFFFFF)], stops: [0, .7, 1]))))));
+              child: const IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(99)), color: Color(0x61FFFFFF))))));
           children.add(Positioned(left: pos[i].dx - f.g / 2, top: pos[i].dy - 12, width: f.tw + f.g, height: th + 24,
               child: Semantics(button: true, label: 'Tube ${i + 1}, ${t.length} of $cap balls${g.isFrozen(i) ? ', frozen' : ''}',
                   child: GestureDetector(behavior: HitTestBehavior.opaque, onTapDown: (_) => widget.onTap(i)))));
@@ -124,7 +123,8 @@ class _BoardState extends State<Board> with SingleTickerProviderStateMixin {
       });
 }
 
-/// A glass tube: a cylinder lit from the left, with a cap when finished and ice when frozen.
+/// A glass tube in solid colours: a lit left edge, a shaded right edge, a solid base and an elliptical
+/// lip at the mouth make it read as a real cylinder; a cap when finished, ice when frozen.
 class _Tube extends StatelessWidget {
   final bool done, frozen, selected, bloomed;
   final String? hint;
@@ -134,26 +134,29 @@ class _Tube extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = isDark(context), edge = hint != null ? bloom : selected || done ? ink(context) : ink(context).withValues(alpha: dark ? .32 : .22);
-    final a = Colors.white.withValues(alpha: dark ? .07 : .5), b = Colors.white.withValues(alpha: dark ? .18 : .88);
-    final shape = RoundedRectangleBorder(side: BorderSide(color: edge, width: hint != null ? 3 : 2.5),
-        borderRadius: BorderRadius.vertical(top: const Radius.circular(10), bottom: Radius.circular(ballSize / 2 + 6)));
+    final fill = frozen ? const Color(0xF2CEE9FA) : done ? ink(context).withValues(alpha: .08) : Colors.white.withValues(alpha: dark ? .07 : .5);
+    final radius = BorderRadius.vertical(top: const Radius.circular(10), bottom: Radius.circular(ballSize / 2 + 6));
+    final shape = RoundedRectangleBorder(side: BorderSide(color: edge, width: hint != null ? 3 : 2.5), borderRadius: radius);
+    Widget band(double? left, double? right, double width, Color c) =>
+        Positioned(left: left, right: right, top: 3, bottom: 3, width: width, child: ColoredBox(color: c));
     return Stack(clipBehavior: Clip.none, children: [
       Positioned.fill(
         child: AnimatedScale(
           scale: bloomed ? 1.06 : 1, duration: const Duration(milliseconds: 220), curve: Curves.easeOutBack,
           child: DecoratedBox(
-            decoration: ShapeDecoration(
-              shape: shape,
-              gradient: frozen
-                  ? const LinearGradient(colors: [Color(0xF2D6EEFC), Color(0xD9AAD6F0), Color(0xF2D6EEFC)])
-                  : done
-                      ? LinearGradient(colors: [ink(context).withValues(alpha: .08), ink(context).withValues(alpha: .15)])
-                      : LinearGradient(colors: [a, b, a, a, b, a], stops: const [0, .14, .32, .72, .9, 1]),
-              shadows: [BoxShadow(color: Colors.black.withValues(alpha: selected ? .34 : .28), blurRadius: selected ? 14 : 10, offset: Offset(0, selected ? 18 : 8), spreadRadius: -6)],
-            ),
+            decoration: ShapeDecoration(shape: shape, color: fill,
+                // a crisp solid base: the tube sits on the table (deeper when lifted)
+                shadows: [BoxShadow(color: Colors.black.withValues(alpha: dark ? .3 : .14), offset: Offset(0, selected ? 16 : 6), spreadRadius: selected ? -5 : -1)]),
+            child: ClipRRect(borderRadius: radius, child: Stack(children: [
+              band(2.5, null, 5, Colors.white.withValues(alpha: dark ? .16 : .4)), // lit left edge
+              band(null, 2.5, 6, Colors.black.withValues(alpha: dark ? .2 : .07)), // shaded right edge
+            ])),
           ),
         ),
       ),
+      // the mouth: a solid ellipse in the page colour, outlined like the glass
+      if (!done) Positioned(top: -5, left: -4, right: -4, height: 10, child: IgnorePointer(child: DecoratedBox(
+          decoration: ShapeDecoration(shape: OvalBorder(side: BorderSide(color: edge, width: 2.5)), color: paper(context))))),
       if (done) Positioned(top: -10, left: 5, right: 5, height: 9, child: DecoratedBox(decoration: BoxDecoration(color: ink(context), borderRadius: BorderRadius.circular(6)))),
       if (done) Positioned(top: -34, left: 0, right: 0, child: const Center(child: Text('✿', style: TextStyle(color: bloom, fontSize: 20)))),
       if (frozen && frozenKey != null)
@@ -171,7 +174,7 @@ class _Tube extends StatelessWidget {
   }
 }
 
-/// A marble drawn as a lit sphere: specular highlight, shadowed far side, bounce light and a contact shadow.
+/// A marble in solid colours, cel-shaded: a solid darker crescent on the shaded side, a solid highlight and a crisp contact shadow.
 class Ball extends StatelessWidget {
   final int color;
   final double size;
@@ -188,7 +191,7 @@ class Ball extends StatelessWidget {
               child: Text(hidden ? '?' : ballSymbols[color % ballSymbols.length],
                   style: TextStyle(fontSize: size * .36, height: 1, fontWeight: FontWeight.w800,
                       color: hidden ? const Color(0xFF3A4560) : Colors.white.withValues(alpha: .95),
-                      shadows: hidden ? null : const [Shadow(color: Color(0x40000000), blurRadius: 1, offset: Offset(0, 1))])),
+                      shadows: hidden ? null : const [Shadow(color: Color(0x40000000), offset: Offset(0, 1))])),
             ),
           ),
         ),
@@ -200,14 +203,21 @@ class _BallPainter extends CustomPainter {
   _BallPainter(this.c);
   @override
   void paint(Canvas canvas, Size s) {
-    final r = s.width / 2, center = Offset(r, r), rect = Rect.fromCircle(center: center, radius: r);
-    canvas.drawCircle(center.translate(0, r * .14), r * .96, Paint()..color = const Color(0x4D0A1020)..maskFilter = MaskFilter.blur(BlurStyle.normal, r * .12));
-    canvas.drawCircle(center, r, Paint()..shader = RadialGradient(center: const Alignment(-.24, -.36), radius: 1.05,
-        colors: [Color.lerp(c, Colors.white, .22)!, c, Color.lerp(c, Colors.black, .38)!], stops: const [0, .5, 1]).createShader(rect));
-    canvas.drawCircle(center, r, Paint()..shader = RadialGradient(center: const Alignment(0, 1.16), radius: .84,
-        colors: [Colors.white.withValues(alpha: .38), Colors.white.withValues(alpha: 0)]).createShader(rect));
-    canvas.drawCircle(center, r, Paint()..shader = RadialGradient(center: const Alignment(-.36, -.52), radius: .6,
-        colors: [Colors.white.withValues(alpha: .95), Colors.white.withValues(alpha: .45), Colors.white.withValues(alpha: 0)], stops: const [0, .18, 1]).createShader(rect));
+    final r = s.width / 2, center = Offset(r, r);
+    canvas.drawCircle(center.translate(0, r * .14), r, Paint()..color = const Color(0x330A1020)); // contact shadow
+    final ball = Path()..addOval(Rect.fromCircle(center: center, radius: r));
+    canvas.drawPath(ball, Paint()..color = Color.lerp(c, Colors.black, .2)!); // shaded side
+    // lit side: the same circle shifted up-left, clipped to the ball, leaves a crescent of shade at the bottom right
+    canvas.save();
+    canvas.clipPath(ball);
+    canvas.drawCircle(center.translate(-r * .2, -r * .24), r, Paint()..color = c);
+    canvas.restore();
+    // highlight: a solid tilted ellipse where the light hits
+    canvas.save();
+    canvas.translate(r * .68, r * .5);
+    canvas.rotate(-.56);
+    canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: r * .6, height: r * .38), Paint()..color = Colors.white.withValues(alpha: .72));
+    canvas.restore();
   }
   @override
   bool shouldRepaint(_BallPainter o) => o.c != c;

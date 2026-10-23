@@ -162,19 +162,19 @@ class _PlayButtonState extends State<PlayButton> {
           onTapCancel: () => setState(() => down = false),
           onTapUp: (_) => setState(() => down = false),
           onTap: () { HapticFeedback.lightImpact(); widget.onTap(); },
-          child: AnimatedScale(
-            scale: down ? .97 : 1, duration: const Duration(milliseconds: 100),
-            child: Container(
-              height: 56,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22),
-                gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFF7352), bloom]),
-                border: Border.all(color: Colors.white.withValues(alpha: .35)),
-                boxShadow: [BoxShadow(color: bloom.withValues(alpha: .3), blurRadius: 20, offset: const Offset(0, 8))],
-              ),
-              child: Text(widget.label, style: const TextStyle(color: navy, fontSize: 17, fontWeight: FontWeight.w800)),
+          // solid orange on a solid darker base; pressing pushes it down onto the base
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 90),
+            height: 56,
+            margin: EdgeInsets.only(top: down ? 3 : 0, bottom: down ? 1 : 4),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: bloom,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: Colors.white.withValues(alpha: .35)),
+              boxShadow: [BoxShadow(color: bloomDeep, offset: Offset(0, down ? 1 : 4))],
             ),
+            child: Text(widget.label, style: const TextStyle(color: navy, fontSize: 17, fontWeight: FontWeight.w800)),
           ),
         ),
       );

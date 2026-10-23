@@ -9,7 +9,7 @@
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/fonts.css">
 <style>
-:root{--ink:#16213A;--paper:#F4EEE3;--bloom:#FF5A36;--leaf:#3F7A49;--muted:rgba(22,33,58,.62);--line:rgba(22,33,58,.1);--card:#fff;--shadow:0 1px 2px rgba(22,33,58,.06),0 6px 18px rgba(22,33,58,.06)}
+:root{--ink:#16213A;--paper:#F4EEE3;--bloom:#FF5A36;--leaf:#3F7A49;--muted:rgba(22,33,58,.62);--line:rgba(22,33,58,.1);--card:#fff;--shadow:0 1px 0 rgba(22,33,58,.06),0 1px 0 rgba(22,33,58,.06)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{background:var(--paper);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;line-height:1.5;-webkit-text-size-adjust:100%}
@@ -24,7 +24,7 @@ a{color:inherit}
 textarea.field{min-height:90px;resize:vertical}
 label.f{display:grid;gap:5px;font-weight:700;font-size:13.5px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:9px 16px;border-radius:12px;font-weight:700;font-size:14.5px;text-decoration:none;white-space:nowrap}
-.btn.primary{background:var(--bloom);color:#fff;box-shadow:0 6px 16px rgba(255,90,54,.25)}
+.btn.primary{background:var(--bloom);color:#fff;box-shadow:0 1px 0 rgba(255,90,54,.25)}
 .btn.dark{background:var(--ink);color:var(--paper)}
 .btn.soft{background:rgba(22,33,58,.07)}
 .btn.danger{color:#B23A20;background:rgba(255,90,54,.1)}
@@ -38,8 +38,8 @@ label.f{display:grid;gap:5px;font-weight:700;font-size:13.5px}
 .pill.planned,.pill.in-progress{background:rgba(62,124,177,.14);color:#2D5F8B}.pill.bug{background:rgba(178,58,32,.12);color:#B23A20}.pill.idea{background:rgba(155,93,229,.14);color:#6B3FB0}
 
 /* login */
-#login{min-height:100%;display:grid;place-items:center;padding:24px 16px;background:radial-gradient(120% 80% at 50% 0%,#22305A,#16213A 65%)}
-.lbox{width:100%;max-width:400px;background:var(--paper);border-radius:26px;padding:30px 24px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+#login{min-height:100%;display:grid;place-items:center;padding:24px 16px;background:#16213A}
+.lbox{width:100%;max-width:400px;background:var(--paper);border-radius:26px;padding:30px 24px;box-shadow:0 4px 0 rgba(0,0,0,.35)}
 .lbox img{width:56px;height:56px;border-radius:14px;display:block;margin-bottom:16px}
 .lbox h1{font-size:30px;line-height:1.1}
 .lbox p{margin:6px 0 20px}
