@@ -1,6 +1,7 @@
 // Builds the Cloudflare Pages site into ./site
 //   site-src/*            hand-written pages (landing, privacy)
 //   www/ -> site/play/    the playable web version of the game
+//   flutter/build/web -> site/flutter/   the Flutter version (when built)
 //   release/*.apk         -> site/download/
 //   site-src/shots/*.png  -> resized screenshots
 import fs from 'node:fs';
@@ -39,6 +40,9 @@ fs.copyFileSync('www/icon-512.png', path.join(OUT, 'icon-512.png'));
 
 // playable web version (levels.json is a duplicate of levels.js)
 copyDir('www', path.join(OUT, 'play'), (f) => f === 'levels.json');
+
+// the Flutter version, if built: cd flutter && flutter build web --release --base-href /flutter/ --no-web-resources-cdn
+if (fs.existsSync('flutter/build/web')) copyDir('flutter/build/web', path.join(OUT, 'flutter'));
 
 // screenshots
 fs.mkdirSync(path.join(OUT, 'img'), { recursive: true });

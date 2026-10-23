@@ -108,6 +108,17 @@ The logo (three tubes of marbles with a marble flower blooming from the middle o
 Static files in `site-src/` (landing page, privacy policy, 404). `scripts/build-site.mjs` adds the playable web game at `/play/`, screenshots from `site-src/shots/` and the latest APK at `/download/`. Hosted as a Cloudflare Worker with static assets (`wrangler.jsonc`).
 To use your own domain: Cloudflare dashboard → Workers & Pages → marblume → Settings → Domains & Routes → Add custom domain.
 
+## Flutter version (flutter/)
+
+The core game rebuilt in Flutter: the same 10,000 levels and rules (undo, hints, Expert play, frozen tubes, hidden balls) with 3D marbles and liquid glass.
+It installs next to the main app as **Marblume F** (`com.marblume.flutter` on Android and iOS). GitHub Actions builds its APK, AAB and .ipa with every release.
+
+```bash
+cp www/levels.json flutter/assets/levels.json   # the levels are shared, not duplicated in git
+cd flutter && flutter test && flutter run
+flutter build web --release --base-href /flutter/ --no-web-resources-cdn   # npm run deploy:site then publishes it at /flutter/
+```
+
 ## Credits
 
 Interface icons from [awesome_icons](https://github.com/JonathanGech/awesome_icons) by Jonathan Getachew (MIT licence).
