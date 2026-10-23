@@ -1,4 +1,4 @@
-# Marblume — store listing kit (version 1.7.0)
+# Marblume — store listing kit (version 1.8.0)
 
 Everything below is ready to paste. Images are in `store/play/` and `store/appstore/`, videos in `store/video/`.
 
@@ -46,7 +46,7 @@ A fresh puzzle every day on a monthly calendar. Catch up on days you missed, kee
 GROW YOUR GARDEN AND MAKE IT YOURS
 • A new flower blooms every ten levels
 • 10 illustrated avatars, a name and a ring colour
-• Nine ranks from Seed to Legend and 20 badges that pay out seeds
+• Nine ranks from Seed to Legend and 21 badges that pay out seeds
 • 55 items to collect: ball styles, tube styles and shapes, game scenes and win effects
 
 PLAY YOUR WAY
@@ -61,7 +61,7 @@ Seeds are earned by playing. Your progress stays on your device. Sharing anonymo
 **Category:** Game → Puzzle · **Tags:** Puzzle, Casual, Logic, Brain games
 **Contains ads:** No (change to Yes in the same release that adds AdMob) · **In-app purchases:** No
 
-### Data safety form (version 1.7.0)
+### Data safety form (version 1.8.0)
 - Does your app collect or share any of the required user data types? **Yes**
 - Is all of the user data collected by your app encrypted in transit? **Yes** (HTTPS)
 - Do you provide a way for users to request that their data is deleted? **Yes** — in the app: Settings → Delete my shared stats (and the website Support page)
@@ -127,7 +127,12 @@ Already answered in the app (`ITSAppUsesNonExemptEncryption = NO`): the app only
 
 ---
 
-## What's new in 1.7.0 (paste into both stores)
+## What's new in 1.8.0 (paste into both stores)
+• Expert play: no hints, no extra tubes, 5 undos a level and double seeds, plus a new badge
+• Stuck? The next two levels are always open, so one hard level never blocks you
+• Better layouts on iPad in portrait and landscape
+
+## What's new in 1.7.0
 • A lighter, glassier look: translucent buttons, a floating tab bar and softer sheets
 • New, clearer icons throughout
 • Respects Reduce Transparency and Increase Contrast settings

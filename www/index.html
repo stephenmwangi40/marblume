@@ -213,6 +213,7 @@ body.saver *:not(.petal),body.saver *:before,body.saver *:after{animation:none !
 body.lefty .toolbar{direction:rtl}
 .tool{color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;min-height:60px;border-radius:24px;background:var(--mat);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);font-size:var(--f12);font-weight:700;line-height:1.2;position:relative;direction:ltr;box-shadow:var(--e1);transition:transform .1s}
 .tool:active{transform:scale(.95)}
+.tool[aria-disabled=true]{opacity:.45}
 .tool .tag{position:absolute;top:-7px;right:6px;font-size:var(--f11);line-height:1.4;background:var(--ink);color:var(--paper);border-radius:var(--r-sm);padding:0 6px;font-variant-numeric:tabular-nums}
 .tool .tag.free{background:var(--paper);color:var(--ink);border:1.5px solid var(--ink)}
 #game{background:radial-gradient(90% 60% at 50% 45%,var(--surface2) 0%,var(--paper) 70%)}
@@ -379,6 +380,10 @@ body.lefty .toolbar{direction:rtl}
 /* ---------- wider screens: tablets, laptops, desktops ---------- */
 .homegrid{display:grid;gap:16px}
 .homeprev{display:none}
+@media (min-width:700px){
+  .homeprev{display:flex;justify-content:center;padding:18px 0 4px}
+  .homevc{min-height:100%;display:flex;flex-direction:column;justify-content:center}
+}
 @media (min-width:860px){
   .homegrid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
   .homegrid .modes{margin-top:0}
@@ -503,10 +508,10 @@ body.lefty .toolbar{direction:rtl}
   <div class="board" id="board"></div>
   <div class="coach" id="coach"><div class="bub" id="coachTxt"></div><div class="hand"></div></div>
   <div class="toolbar gut">
-    <button class="tool" onclick="undo()"><span class="tag free">∞</span><span data-i="undo"></span>Undo</button>
+    <button class="tool" onclick="undo()"><span class="tag free" id="undoTag">∞</span><span data-i="undo"></span>Undo</button>
     <button class="tool" onclick="restart()"><span class="tag free">free</span><span data-i="restart"></span>Restart</button>
-    <button class="tool" onclick="hint()"><span class="tag" id="hintTag">3</span><span data-i="bulb"></span>Hint</button>
-    <button class="tool" onclick="addTube()"><span class="tag" id="tubeTag">1</span><span data-i="plus"></span>Tube</button>
+    <button class="tool help" onclick="hint()"><span class="tag" id="hintTag">3</span><span data-i="bulb"></span>Hint</button>
+    <button class="tool help" onclick="addTube()"><span class="tag" id="tubeTag">1</span><span data-i="plus"></span>Tube</button>
   </div>
 </div>
 
@@ -652,6 +657,7 @@ body.lefty .toolbar{direction:rtl}
     <div class="label" style="margin:10px 0 6px">Play</div>
     <div class="card" style="padding:2px 16px">
       <div class="setrow"><span class="t"><b>Smart pour</b><small>Move all matching balls in one tap</small></span><button class="toggle" data-set="smart" onclick="toggleSet('smart')" aria-label="Smart pour"></button></div>
+      <div class="setrow"><span class="t"><b>Expert play</b><small>No hints or extra tubes, 5 undos a level. Double seeds.</small></span><button class="toggle" data-set="expert" onclick="toggleSet('expert')" aria-label="Expert play"></button></div>
       <div class="setrow"><span class="t"><b>Relaxed play</b><small>Start every level with one extra empty tube</small></span><button class="toggle" data-set="relaxed" onclick="toggleSet('relaxed')" aria-label="Relaxed play"></button></div>
       <div class="setrow"><span class="t"><b>Colour-blind symbols</b><small>Shape on every ball</small></span><button class="toggle" data-set="symbols" onclick="toggleSet('symbols')" aria-label="Colour-blind symbols"></button></div>
       <div class="setrow"><span class="t"><b>Left-handed toolbar</b></span><button class="toggle" data-set="lefty" onclick="toggleSet('lefty')" aria-label="Left-handed toolbar"></button></div>
@@ -776,7 +782,7 @@ body.lefty .toolbar{direction:rtl}
 <script src="i18n.js"></script>
 <script>
 'use strict';
-const VERSION='1.7.0';
+const VERSION='1.8.0';
 const API=window.MARBLUME_API??'https://marblume.stephenmurigimwangi403.workers.dev';
 const DATA=window.MARBLUME_LEVELS;const LV=DATA.levels;const TOTAL=LV.length;
 
@@ -866,12 +872,12 @@ const DEFAULTS={unlocked:1,stars:{},seeds:100,best:{},recent:[],hints:{day:'',le
   daily:{},streak:0,bestStreak:0,lastDaily:'',dailyMonths:{},history:[],counters:{wins:0,moves:0,hints:0,tubes:0,undos:0,thaws:0,clean:0},
   theme:'classic',tube:'glass',shape:'round',bg:'cream',fx:'petals',owned:{},flowersSeen:0,badges:{},frozenSeen:false,
   profile:{name:'',avatar:0,ring:0},prefs:{theme:'auto',text:'auto',lang:'auto'},install:'',queue:[],surveys:{},
-  settings:{smart:true,symbols:true,lefty:false,sound:true,haptics:true,saver:false,relaxed:false,stats:null}};
+  expert:{},settings:{smart:true,symbols:true,lefty:false,sound:true,haptics:true,saver:false,relaxed:false,expert:false,stats:null}};
 let S;
 function normalize(o){S=Object.assign(JSON.parse(JSON.stringify(DEFAULTS)),o||{});
   for(const k of ['settings','profile','counters','prefs'])S[k]=Object.assign({},DEFAULTS[k],S[k]||{});
   for(const k of ['history','queue','recent'])if(!Array.isArray(S[k]))S[k]=[];
-  for(const k of ['stars','best','daily','owned','badges','surveys','dailyMonths'])if(!S[k]||typeof S[k]!=='object')S[k]={};
+  for(const k of ['stars','best','daily','owned','badges','surveys','dailyMonths','expert'])if(!S[k]||typeof S[k]!=='object')S[k]={};
   // owned items record how they were obtained: {how:'starter'|'bought'|'earned', price, date}
   for(const k of Object.keys(S.owned))if(S.owned[k]===true)S.owned[k]={how:k==='classic'?'starter':'bought',date:null};
   for(const k of ['classic','glass','round','cream','petals'])if(!S.owned[k])S.owned[k]={how:'starter',date:null}}
@@ -881,7 +887,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const dkey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const today=()=>dkey(new Date());
 function hintsLeft(){if(S.hints.day!==today()){S.hints={day:today(),left:3};save()}return S.hints.left}
-const isUnlocked=n=>n<=S.unlocked;
+const AHEAD=2,isUnlocked=n=>n<=S.unlocked+AHEAD;
 // the seed badge shortens very large numbers (e.g. 1.2M) so it never squeezes the player's name
 const compact=n=>n<100000?N(n):new Intl.NumberFormat(LOCALE,{notation:'compact',maximumFractionDigits:1}).format(n);
 function setSeeds(v){S.seeds=Math.max(0,v);save();document.querySelectorAll('.seeds').forEach(e=>{e.textContent=compact(S.seeds);e.parentElement.setAttribute('aria-label',tr('{n} seeds',{n:N(S.seeds)}))})}
@@ -928,7 +934,7 @@ function applySettings(){const s=S.settings;const gm=$('game');gm.className=gm.c
   document.body.classList.toggle('nosym',!s.symbols);document.body.classList.toggle('lefty',s.lefty);document.body.classList.toggle('saver',s.saver);
   document.querySelectorAll('[data-set]').forEach(t=>{t.classList.toggle('on',!!s[t.dataset.set]);t.setAttribute('aria-pressed',!!s[t.dataset.set])});
   if(current)barStyle(screenIsDark(current))}
-function toggleSet(k){S.settings[k]=!S.settings[k];save();applySettings();if(k==='haptics')buzz();if(k==='sound')SFX.ui();if(k==='relaxed'&&current==='settings')toast(tr(S.settings.relaxed?'Relaxed play is on. It starts with your next level.':'Relaxed play is off.'))}
+function toggleSet(k){S.settings[k]=!S.settings[k];if(S.settings[k]&&(k==='expert'||k==='relaxed'))S.settings[k==='expert'?'relaxed':'expert']=false;save();applySettings();if(k==='haptics')buzz();if(k==='sound')SFX.ui();if(k==='relaxed'&&current==='settings')toast(tr(S.settings.relaxed?'Relaxed play is on. It starts with your next level.':'Relaxed play is off.'));if(k==='expert'&&current==='settings')toast(tr(S.settings.expert?'Expert play is on. It starts with your next level.':'Expert play is off.'))}
 function setPref(k,v){S.prefs[k]=v;save();if(k==='theme')applyTheme();if(k==='text')applyText();if(k==='lang'){pickLang();translateStatic();paintNav();renderOB();RENDER[current]?.();renderSettings()}}
 function renderSettings(){setTheme.value=S.prefs.theme;setText.value=S.prefs.text;
   setLang.innerHTML=[['auto',tr('Automatic')],...LANGS].map(([k,l])=>`<option value="${k}">${l}</option>`).join('');setLang.value=S.prefs.lang||'auto';$('ver').textContent=VERSION}
@@ -1003,7 +1009,7 @@ function fitBoard(nT,c,W,H){let best=null;const big=Math.min(innerWidth,innerHei
   for(let rows=1;rows<=Math.min(4,nT);rows++){const per=Math.ceil(nT/rows);
     for(let bs=Math.min(cap,Math.floor(W/per));bs>=12;bs--){const tw=bs+12,g=Math.round(Math.max(8,bs*.32)),rg=Math.round(Math.max(30,bs*.62));
       const w=per*tw+(per-1)*g,h=rows*(c*(bs+4)+14)+(rows-1)*rg+bs*.8+(rows>1?0:6);
-      if(w<=W&&h<=H){if(!best||bs>best.bs)best={bs,tw,g,rg,per,w};break}}}
+      if(w<=W&&h<=H){const score=bs*(w>W*.9&&rows===1&&nT>8?.88:1);if(!best||score>best.score)best={bs,tw,g,rg,per,w,score};break}}}
   return best||{bs:12,tw:24,g:6,rg:24,per:Math.ceil(nT/2),w:W}}
 function boardHTML(T,c,hidM,cls,box){const r=box&&box.width>60&&box.height>60?{width:box.width-16,height:box.height-28-(KB?20:0)}:{width:Math.min(innerWidth,1200)-32,height:Math.max(220,innerHeight-290)};
   const f=fitBoard(T.length,c,Math.min(r.width,1200),r.height);const sh=S.shape&&S.shape!=='round'?' sh-'+S.shape:'';
@@ -1114,6 +1120,7 @@ const BADGES=[
  ['month','Full month','Finish every Daily Bloom of a month','cal',()=>Object.keys(S.dailyMonths).length,1,200],
  ['thaw','Ice breaker','Thaw 10 frozen tubes','snow',()=>S.counters.thaws||0,10,75],
  ['clean','No help needed','Finish 25 levels without hints or extra tubes','bulb',()=>S.counters.clean||0,25,100],
+ ['expert','Expert','Finish 25 levels in Expert play','fire',()=>Object.keys(S.expert).length,25,250],
  ['items10','Collector','Own 10 shop items','bag',()=>Object.keys(S.owned).filter(itemOf).length,10,50],
  ['items30','Curator','Own 30 shop items','bag',()=>Object.keys(S.owned).filter(itemOf).length,30,150]];
 // Gives every newly reached badge (and its seeds) once; returns the new ones.
@@ -1143,7 +1150,7 @@ function renderHome(){const n=Math.min(S.unlocked,TOTAL),v=lvInfo(n),w=v.world,r
   {const x=tierOf(v.diff);homeDiff.style.setProperty('--dc',x[2]);homeDiff.innerHTML=`<span>${tr('Difficulty')}</span><div class="bar"><i style="width:${v.diff}%"></i></div>${dchip(v.diff)}`}
   const inW=(n-1)%PER+1;homeBar.style.width=(inW/PER*100)+'%';const nb=10-((n-1)%10);
   homeProg.textContent=tr('{a} / {b} in this world',{a:inW,b:PER})+' · '+(nb===1?tr('flower on this level'):tr('{n} levels to next flower',{n:nb}));
-  if(innerWidth>=860)homePrev.innerHTML=miniBoard(v.tubes,v.cap,Math.min(420,homePrev.clientWidth||420),v.hidden);else homePrev.innerHTML='';
+  if(innerWidth>=700)homePrev.innerHTML=miniBoard(v.tubes,v.cap,Math.min(420,homePrev.clientWidth||420),v.hidden);else homePrev.innerHTML='';
   homeStreak.textContent=currentStreak()?trn(currentStreak(),'{n}-day streak','{n}-day streak'):tr('One puzzle a day');setSeeds(S.seeds);renderSurvey();
   if(S.settings.stats===null&&doneCount()>=3&&!askedStats){askedStats=true;setTimeout(askStats,700)}}
 function playCurrent(){startLevel(Math.min(S.unlocked,TOTAL))}
@@ -1218,7 +1225,7 @@ function renderMap(){const curW=worldOf(Math.min(S.unlocked,TOTAL));const w=mapW
   const center=(w===curW)?S.unlocked:w*PER+1;const lo=Math.max(w*PER+1,center-9),hi=Math.min(w*PER+PER,lo+12,TOTAL);
   const bw=document.querySelector('[data-id="map"] .body').clientWidth||innerWidth;const amp=Math.max(.3,Math.min(1,(Math.min(bw,640)-200)/220));
   const off=[0,70,100,70,0,-70,-100,-70];let mp='';
-  for(let l=hi;l>=lo;l--){const ty=LV[l-1][5];let cls=l<S.unlocked?'done':l===S.unlocked?'cur':'lock';const o=Math.round(off[l%8]*amp);
+  for(let l=hi;l>=lo;l--){const ty=LV[l-1][5];let cls=S.stars[l]?'done':l===S.unlocked?'cur':isUnlocked(l)?'':'lock';const o=Math.round(off[l%8]*amp);
     const inner=ty===1?svg('leaf'):N(l);const side=o>0?' l':'';const tag=l===S.unlocked?`<span class="tagx${side}">${tr('You are here')}</span>`:ty===2?`<span class="tagx${side}">${tr('Boss bloom')}</span>`:ty===1?`<span class="tagx${side}">${tr('Breather')}</span>`:'';
     if(ty===2)cls+=' boss';const s=S.stars[l];
     mp+=`<div class="node ${cls}" style="transform:translateX(${o}px);${String(l).length>3?'font-size:var(--f13)':''}" role="button" tabindex="0" aria-label="${tr('Level {n}',{n:l})}" onclick="startLevel(${l})">${inner}${s?starsHTML(s):''}${tag}</div>`}
@@ -1236,20 +1243,20 @@ function lsWorld(d){lsW=(lsW+d+NW)%NW;renderLS();document.querySelector('[data-i
 function lsJump(){const n=Math.floor(+lsGo.value);if(n>=1&&n<=TOTAL){lsW=worldOf(n);renderLS();startLevel(n)}else toast(tr('Enter a level from 1 to {n}',{n:N(TOTAL)}))}
 
 /* ---------- game ---------- */
-let curLevel=0,cap=4,par=0,tubes=[],hid=[],sel=null,hist=[],moves=0,extra=1,zenMode=false,dailyMode=false,pendingLevel=1,startT=null,startH=null,startF=null,fz=null,justDone=-1;
+let curLevel=0,cap=4,par=0,tubes=[],hid=[],sel=null,hist=[],moves=0,extra=1,expert=false,undoLeft=Infinity,nextLv=0,zenMode=false,dailyMode=false,pendingLevel=1,startT=null,startH=null,startF=null,fz=null,justDone=-1;
 let coachStep=0,coachLeft=0,coachMove=null,sess=null;
 const KB=matchMedia('(hover:hover) and (pointer:fine)').matches;
 const board=$('board');
 function startLevel(n){if(!isUnlocked(n)){toast(`<b>${tr('Level {n} is locked.',{n:N(n)})}</b> ${tr('Finish level {n} first.',{n:N(S.unlocked)})}`);return}zenMode=false;dailyMode=false;
   if(n>1&&(n-1)%PER===0&&!S.stars[n]){showIntro(n);return}loadLevel(n);go('game')}
-function loadLevel(n){endSess(false);curLevel=n;const v=lvInfo(n);cap=v.cap;par=v.par;startT=v.tubes.map(x=>x.slice());if(S.settings.relaxed)startT.push([]);startH=v.hidden;startF=v.frozen;restart();
+function loadLevel(n){endSess(false);curLevel=n;const v=lvInfo(n);cap=v.cap;par=v.par;expert=!zenMode&&S.settings.expert;startT=v.tubes.map(x=>x.slice());if(S.settings.relaxed&&!expert)startT.push([]);startH=v.hidden;startF=v.frozen;restart();
   gLabel.textContent=dailyMode?(dailyMode===today()?tr('Daily Bloom'):fmtDay(dailyMode)):zenMode?tr('Zen'):tr('Level {n}',{n:N(n)})+(v.type===2?' · '+tr('Boss'):v.type===1?' · '+tr('Breather'):'');
-  gPar.textContent=zenMode?'':'/ '+tr('par {n}',{n:par});gInfo.innerHTML=`<span>${tr('{n} tubes of {c}',{n:v.tubes.length,c:v.cap})}</span>${S.settings.relaxed?`<span>· ${tr('Relaxed')}</span>`:''}${dchip(v.diff)}`;
+  gPar.textContent=zenMode?'':'/ '+tr('par {n}',{n:par});gInfo.innerHTML=`<span>${tr('{n} tubes of {c}',{n:v.tubes.length,c:v.cap})}</span>${expert?`<span class="dchip" style="--dc:var(--ink);--dt:var(--paper)">${tr('Expert')}</span>`:S.settings.relaxed?`<span>· ${tr('Relaxed')}</span>`:''}${dchip(v.diff)}`;
   coachStep=0;coachLeft=0;if(n===1&&!zenMode&&!dailyMode&&!S.stars[1]){coachLeft=2;planCoach()}
   sess={n,mode:dailyMode?'daily':zenMode?'zen':'level',t0:Date.now(),mv:0,hi:0,tb:0,un:0,done:false};
   if(startF&&!S.frozenSeen){S.frozenSeen=true;save();setTimeout(()=>{if(current==='game')ask(tr('A frozen tube'),tr('One spare tube is frozen. Finish a {c} tube and the ice melts, giving you an extra empty tube.',{c:colourName(startF.k)}),tr('Got it'),{cancel:tr('Close')})},450)}}
 function restart(){tubes=JSON.parse(JSON.stringify(startT));hid=tubes.map((t,i)=>t.map((_,j)=>!!(startH&&j<startH[i])));fz=startF?{i:startF.i,k:startF.k,locked:true}:null;
-  sel=null;hist=[];moves=0;extra=1;justDone=-1;render();tipSet(tr('Tap a tube to lift its top ball'))}
+  sel=null;hist=[];moves=0;extra=expert?0:1;undoLeft=expert?5:Infinity;justDone=-1;render();tipSet(tr('Tap a tube to lift its top ball'))}
 const top_=t=>t[t.length-1];
 const isDone=t=>t.length===cap&&t.every(b=>b===t[0]);
 const isFrozen=i=>!!(fz&&fz.locked&&fz.i===i);
@@ -1257,7 +1264,9 @@ function canMove(a,b){const A=tubes[a],B=tubes[b];return a!==b&&!isFrozen(a)&&!i
 function tipSet(x){$('tip').textContent=x}
 const tubeEl=i=>board.querySelector(`[data-t="${i}"]`);
 function render(){if(!tubes.length)return;stopFlights();const r=boardHTML(tubes,cap,hid,(i,t)=>`${i===sel?'sel':''} ${isDone(t)?'done':''}`,current==='game'?board.getBoundingClientRect():null);board.style.cssText=r.style;board.innerHTML=r.html;
-  mv.textContent=zenMode?'':moves;hintTag.textContent=hintsLeft()>0?hintsLeft():'25';tubeTag.textContent=extra>0?extra:'40'}
+  mv.textContent=zenMode?'':moves;hintTag.textContent=expert?tr('off'):hintsLeft()>0?hintsLeft():'25';tubeTag.textContent=expert?tr('off'):extra>0?extra:'40';undoTag.textContent=expert?undoLeft:'∞';
+  for(const b of document.querySelectorAll('.tool.help'))b.setAttribute('aria-disabled',expert)}
+function shakeTool(i){const el=document.querySelectorAll('#game .tool')[i];if(!el)return;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');SFX.wrong();buzz()}
 function shake(i){const el=tubeEl(i);if(!el)return;el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),320)}
 function tap(i){
   if(current!=='game')return;
@@ -1311,10 +1320,10 @@ function celebrateTube(b){SFX.complete();buzz('heavy');const el=tubeEl(b);if(!el
     const a=(i/12)*Math.PI*2-Math.PI/2,d=28+Math.random()*26;
     s.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d-10}px) scale(.3)`,opacity:0}],{duration:520+Math.random()*160,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>s.remove()}}
 function anyMove(){for(let a=0;a<tubes.length;a++)for(let b=0;b<tubes.length;b++)if(canMove(a,b))return true;return false}
-function undo(){if(!hist.length){tipSet(tr('Nothing to undo yet'));return}const nT=tubes.length;let lk;[tubes,hid,moves,lk]=JSON.parse(hist.pop());
+function undo(){if(!hist.length){tipSet(tr('Nothing to undo yet'));return}if(undoLeft<=0){shakeTool(0);tipSet(tr('No undos left. Restart is always free'));return}undoLeft--;const nT=tubes.length;let lk;[tubes,hid,moves,lk]=JSON.parse(hist.pop());
   while(tubes.length<nT){tubes.push([]);hid.push([])} // extra tubes you added stay after Undo
   if(fz&&lk!==null)fz.locked=lk;
-  sel=null;S.counters.undos++;if(sess)sess.un++;render();tipSet(tr('Undone — undo is always free'))}
+  sel=null;S.counters.undos++;if(sess)sess.un++;render();tipSet(expert?trn(undoLeft,'{n} undo left','{n} undos left'):tr('Undone — undo is always free'))}
 // Hint: search for a real solution from the current position (same rules as the level solver) and show its first move.
 function solveFirst(T0,cap0,limit,F){
   const key=(T,l)=>T.map(t=>t.join('')).sort().join(',')+(l?'#':''),hh=T=>{let s=0;for(const t of T)for(let i=1;i<t.length;i++)if(t[i]!==t[i-1])s++;return s};
@@ -1330,6 +1339,7 @@ function solveFirst(T0,cap0,limit,F){
         push({T:Nn,g:g+1,f:g+1+2*hh(Nn),first:first||[a,b],l:nl})}}}
   return null}
 function hint(){
+  if(expert){shakeTool(2);tipSet(tr('No hints in Expert play'));return}
   if(hintsLeft()<=0&&S.seeds<25){tipSet(tr('Out of hints today — earn seeds by finishing levels'));return}
   tipSet(tr('Thinking…'));
   setTimeout(()=>{
@@ -1344,7 +1354,7 @@ function hint(){
     ea.classList.add('hint');ea.dataset.hint=tr('From');eb.classList.add('hint');eb.dataset.hint=tr('To');
     tipSet(sure?tr('Best move: from the tube marked “From” to “To”'):tr('This position is tricky — try this move, or Undo a few steps'));
     clearTimeout(hint._t);hint._t=setTimeout(()=>board.querySelectorAll('.hint').forEach(e=>{e.classList.remove('hint');delete e.dataset.hint}),3200)},30)}
-function addTube(){if(tubes.length>=16){tipSet(tr('No room for another tube'));return}
+function addTube(){if(expert){shakeTool(3);tipSet(tr('No extra tubes in Expert play'));return}if(tubes.length>=16){tipSet(tr('No room for another tube'));return}
   if(extra>0){extra--}else if(S.seeds>=40){setSeeds(S.seeds-40)}else{tipSet(tr('You need 40 seeds for another tube'));return}
   tubes.push([]);hid.push([]);sel=null;S.counters.tubes++;if(sess)sess.tb++;save();render();SFX.ui();tipSet(extra>0?tr('Extra tube added'):tr('Extra tube added')+(S.seeds>=40?' · '+tr('next one costs 40 seeds'):''))}
 /* first-time tutorial on level 1: points at a real good move, twice */
@@ -1379,11 +1389,13 @@ function showWin(){
     winLabel.textContent=k===today()?tr('Daily Bloom'):tr('Daily Bloom · {d}',{d:fmtDay(k)});winNote.textContent=(prevBest?tr("This day's best: {n} moves",{n:S.daily[k]}):k===today()?trn(S.streak,'Streak: {n} day','Streak: {n} days'):tr('Caught up'))+extraNote;winNext.innerHTML=tr('Back to Daily')+svg('arrow')}
   else{
     const first=!S.stars[curLevel];S.stars[curLevel]=Math.max(S.stars[curLevel]||0,s);if(!first)gain=Math.max(0,s-1);
+    if(expert){if(!S.expert[curLevel]){S.expert[curLevel]=1;gain*=2}extraNote=' · '+tr('Expert clear')}
     S.best[curLevel]=Math.min(S.best[curLevel]||9999,moves);S.recent=[...S.recent,[moves,par]].slice(-10);
     S.history=[{n:curLevel,m:moves,p:par,s,d:today()},...S.history].slice(0,40);
-    if(curLevel===S.unlocked&&S.unlocked<TOTAL)S.unlocked++;
+    const front=curLevel===S.unlocked;while(S.unlocked<TOTAL&&S.stars[S.unlocked])S.unlocked++; // skips levels already solved ahead
+    nextLv=front?S.unlocked:curLevel+1;
     winLabel.textContent=`${tr('Level {n}',{n:N(curLevel)})} · ${tr(WORLD_INFO[worldOf(curLevel)][0])}`;
-    const nb=10-(curLevel%10);winNote.textContent=curLevel%10===0?tr('A new flower is ready for your garden'):trn(nb,'{n} more level until a new flower','{n} more levels until a new flower');
+    const nb=10-(curLevel%10);winNote.textContent=(curLevel%10===0?tr('A new flower is ready for your garden'):trn(nb,'{n} more level until a new flower','{n} more levels until a new flower'))+extraNote;
     winNext.innerHTML=(curLevel<TOTAL?tr('Next level'):tr('Home'))+svg('arrow')}
   S.counters.wins++;S.counters.moves+=moves;setSeeds(S.seeds+gain);save();checkUnlocks();
   const nb=checkBadges();
@@ -1393,8 +1405,8 @@ function showWin(){
   SFX.win();buzz('success');
   go('win');petals();flushStats()}
 function afterWin(){if(dailyMode){go('daily');return}
-  if(curLevel%10===0&&S.flowersSeen<curLevel/10){S.flowersSeen=curLevel/10;setSeeds(S.seeds+50);showReward(curLevel)}else goNext()}
-function goNext(){if(curLevel<TOTAL)startLevel(curLevel+1);else go('home')}
+  const due=Math.floor((S.unlocked-1)/10);if(due>S.flowersSeen){setSeeds(S.seeds+50*(due-S.flowersSeen));S.flowersSeen=due;save();showReward(due*10)}else goNext()}
+function goNext(){const n=nextLv||curLevel+1;nextLv=0;if(n<=TOTAL)startLevel(n);else go('home')}
 function showReward(n){const k=n/10;const b=BALLS[k%12];rwTitle.textContent=tr('{c} bloom',{c:tr(b.n)});rwFlower.innerHTML=flower(b.c,170,5+(k%4));
   rwText.textContent=tr('Level {n} complete. A {c} flower joins your {w} bed.',{n:N(n),c:tr(b.n).toLowerCase(),w:tr(WORLD_INFO[worldOf(n)][0])});go('reward');petals();SFX.reward()}
 function showIntro(n){pendingLevel=n;const w=worldOf(n),x=WORLD_INFO[w];wiNum.textContent=tr('World {n} · Levels {a}–{b}',{n:w+1,a:N(w*PER+1),b:N(Math.min(TOTAL,w*PER+PER))});wiName.textContent=tr(x[0]);
@@ -1418,7 +1430,7 @@ function newId(){const a=new Uint8Array(16);crypto.getRandomValues(a);return [..
 function installId(){if(!S.install){S.install=newId();save()}return S.install}
 function endSess(won,stars){if(!sess||sess.done)return;sess.done=true;if(!won&&!sess.mv)return;
   if(S.settings.stats!==true)return;
-  S.queue.push({lv:sess.n,mode:sess.mode,won:won?1:0,mv:moves,par,st:stars||0,hi:sess.hi,tb:sess.tb,un:sess.un,sec:Math.min(86400,Math.round((Date.now()-sess.t0)/1000)),rx:S.settings.relaxed?1:0,fz:startF?1:0,at:new Date().toISOString()});
+  S.queue.push({lv:sess.n,mode:sess.mode,won:won?1:0,mv:moves,par,st:stars||0,hi:sess.hi,tb:sess.tb,un:sess.un,sec:Math.min(86400,Math.round((Date.now()-sess.t0)/1000)),rx:S.settings.relaxed?1:0,ex:expert?1:0,fz:startF?1:0,at:new Date().toISOString()});
   if(S.queue.length>300)S.queue=S.queue.slice(-300);save()}
 let flushing=false;
 async function flushStats(){if(S.settings.stats!==true||!S.queue.length||flushing||!navigator.onLine)return;flushing=true;const batch=S.queue.slice(0,50);
