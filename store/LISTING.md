@@ -1,4 +1,4 @@
-# Marblume — store listing kit (version 1.12.1)
+# Marblume — store listing kit (version 1.12.2)
 
 Everything below is ready to paste. Images are in `store/play/` and `store/appstore/`, videos in `store/video/`.
 
@@ -144,7 +144,10 @@ Already answered in the app (`ITSAppUsesNonExemptEncryption = NO`): the app only
 
 ---
 
-## What's new in 1.12.1 (paste into both stores)
+## What's new in 1.12.2 (paste into both stores)
+• Tap the level card on Home to start playing
+
+## What's new in 1.12.1
 • Fixes: video buttons now only appear when a video is ready
 
 ## What's new in 1.12.0

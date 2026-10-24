@@ -11,6 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <style>
 [hidden]{display:none!important}
+.lb-stage{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s}.lb-stage:active{transform:scale(.985)}
 :root{
   /* brand constants: the same in light and dark appearance */
   --navy:#16213A;--navy2:#22305A;--cream:#F4EEE3;--bloom:#FF5A36;--leaf:#6BAA75;
@@ -527,7 +528,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
     <div id="homeSurvey"></div>
     <div class="lb-grid">
       <div class="lb-main">
-        <section class="lb-stage" aria-labelledby="hLvl">
+        <section class="lb-stage" aria-labelledby="hLvl" onclick="playCurrent()">
           <div class="lb-head"><div style="min-width:0"><div class="label" id="hWorld"></div><h2 class="lb-lvl serif" id="hLvl"></h2></div><div class="lb-boss" id="hBoss"></div></div>
           <div class="lb-board" id="hBoard" aria-hidden="true"></div>
           <div class="lb-facts">
@@ -907,7 +908,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
 <script src="i18n.js"></script>
 <script>
 'use strict';
-const VERSION='1.12.1';
+const VERSION='1.12.2';
 const API=window.MARBLUME_API??'https://marblume.stephenmurigimwangi403.workers.dev';
 const DATA=window.MARBLUME_LEVELS;const LV=DATA.levels;const TOTAL=LV.length;
 
