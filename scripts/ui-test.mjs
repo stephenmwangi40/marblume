@@ -14,7 +14,7 @@ const DEVICES = [
   ['fold-landscape-740', 740, 360, 3, true], ['ipad-768', 768, 1024, 2, true], ['ipad-air-820', 820, 1180, 2, true],
   ['ipad-landscape-1180', 1180, 820, 2, true], ['laptop-1366', 1366, 768, 1, false], ['desktop-1920', 1920, 1080, 1, false],
 ];
-const APP_SCREENS = ['home', 'map', 'levels', 'game', 'gameBig', 'gameShort', 'pause', 'win', 'profile', 'shop', 'garden', 'daily', 'settings', 'onboard4', 'stuck', 'worldintro', 'reward', 'board', 'shopTubes', 'shopBg', 'shopFx', 'gameNight', 'help', 'privacy', 'splash'];
+const APP_SCREENS = ['home', 'map', 'levels', 'game', 'gameBig', 'gameShort', 'pause', 'win', 'profile', 'shop', 'garden', 'daily', 'settings', 'onboard4', 'stuck', 'worldintro', 'reward', 'board', 'shopTubes', 'shopBg', 'shopFx', 'gameNight', 'help', 'privacy'];
 const exe = BROWSERS.find((b) => fs.existsSync(b));
 const browser = await puppeteer.launch({ executablePath: exe, headless: true, args: ['--hide-scrollbars'] });
 fs.mkdirSync(OUT, { recursive: true });
@@ -59,7 +59,6 @@ for (const [name, w, h, dpr, mobile] of DEVICES) {
         else if (s === 'shopBg') { shopTab = 'bg'; go('shop'); }
         else if (s === 'shopFx') { shopTab = 'fx'; go('shop'); }
         else if (s === 'gameNight') { S.bg = 'night'; S.tube = 'ice'; S.theme = 'neon'; applySettings(); loadLevel(9137); go('game'); }
-        else if (s === 'splash') { S.bg = 'cream'; S.tube = 'glass'; S.theme = 'classic'; applySettings(); go('splash'); }
         else if (s === 'onboard4') { ob = 3; renderOB(); go('onboard'); }
         else if (s === 'worldintro') showIntro(501);
         else if (s === 'reward') showReward(130);

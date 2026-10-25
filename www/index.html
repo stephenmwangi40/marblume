@@ -11,6 +11,9 @@
 <link rel="manifest" href="manifest.json">
 <style>
 [hidden]{display:none!important}
+body.boot .screen.active{animation:none}
+.lb-board.intro .ball{animation:lbIn .5s cubic-bezier(.2,.8,.3,1.15) both}.lb-play.intro{animation:lbRise .45s .25s cubic-bezier(.2,.8,.3,1.1) both}
+@keyframes lbIn{from{transform:translateY(-70px) scale(.7)}to{transform:none}}@keyframes lbRise{from{transform:translateY(18px) scale(.96)}to{transform:none}}
 .lb-stage{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s}.lb-stage:active{transform:scale(.985)}
 :root{
   /* brand constants: the same in light and dark appearance */
@@ -497,15 +500,6 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
 <body>
 <div id="app">
 
-<div class="screen dark active" data-id="splash">
-  <div class="body gut" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center" onclick="leaveSplash()">
-    <svg width="140" height="140" viewBox="-4 -4 108 108" aria-hidden="true"><path d="M12 46 V82 a10 10 0 0 0 20 0 V46" fill="rgba(244,238,227,.12)" stroke="#F4EEE3" stroke-width="3" stroke-linecap="round"/><path d="M68 46 V82 a10 10 0 0 0 20 0 V46" fill="rgba(244,238,227,.12)" stroke="#F4EEE3" stroke-width="3" stroke-linecap="round"/><path d="M40 40 V82 a10 10 0 0 0 20 0 V40" fill="rgba(244,238,227,.12)" stroke="#F4EEE3" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="83" r="7" fill="#3E7CB1"/><circle cx="19.759999999999998" cy="80.48" r="2.1" fill="#fff" opacity=".55"/><circle cx="22" cy="67.5" r="7" fill="#E9B44C"/><circle cx="19.759999999999998" cy="64.98" r="2.1" fill="#fff" opacity=".55"/><circle cx="22" cy="52" r="7" fill="#E56B9F"/><circle cx="19.759999999999998" cy="49.48" r="2.1" fill="#fff" opacity=".55"/><circle cx="78" cy="83" r="7" fill="#6BAA75"/><circle cx="75.76" cy="80.48" r="2.1" fill="#fff" opacity=".55"/><circle cx="78" cy="67.5" r="7" fill="#3E7CB1"/><circle cx="75.76" cy="64.98" r="2.1" fill="#fff" opacity=".55"/><circle cx="78" cy="52" r="7" fill="#E9B44C"/><circle cx="75.76" cy="49.48" r="2.1" fill="#fff" opacity=".55"/><circle cx="50" cy="83" r="7" fill="#2EC4B6"/><circle cx="47.76" cy="80.48" r="2.1" fill="#fff" opacity=".55"/><circle cx="50" cy="67.5" r="7" fill="#2EC4B6"/><circle cx="47.76" cy="64.98" r="2.1" fill="#fff" opacity=".55"/><circle cx="50" cy="52" r="7" fill="#2EC4B6"/><circle cx="47.76" cy="49.48" r="2.1" fill="#fff" opacity=".55"/><circle cx="50" cy="11.5" r="7" fill="#E56B9F"/><circle cx="47.76" cy="8.98" r="2.1" fill="#fff" opacity=".55"/><circle cx="59.98609342109911" cy="18.755321559063052" r="7" fill="#E9B44C"/><circle cx="57.74609342109911" cy="16.235321559063053" r="2.1" fill="#fff" opacity=".55"/><circle cx="56.171745149070965" cy="30.494678440936948" r="7" fill="#3E7CB1"/><circle cx="53.93174514907096" cy="27.974678440936948" r="2.1" fill="#fff" opacity=".55"/><circle cx="43.828254850929035" cy="30.494678440936948" r="7" fill="#6BAA75"/><circle cx="41.58825485092903" cy="27.974678440936948" r="2.1" fill="#fff" opacity=".55"/><circle cx="40.01390657890089" cy="18.75532155906305" r="7" fill="#9B5DE5"/><circle cx="37.773906578900885" cy="16.23532155906305" r="2.1" fill="#fff" opacity=".55"/><circle cx="50" cy="22" r="6" fill="#FF5A36"/></svg>
-    <h1 class="serif" style="font-size:var(--f44);letter-spacing:-.02em">Marblume</h1>
-    <p class="muted">Sort the colours. Grow the garden.</p>
-    <div style="width:140px;margin-top:30px" class="bar accent"><i id="splashBar" style="width:10%;transition:width 1.2s"></i></div>
-  </div>
-</div>
-
 <div class="screen" data-id="onboard" style="--mw:560px">
   <div class="body gut" style="display:flex;flex-direction:column">
     <div class="row between" style="margin-top:6px"><span class="label" id="obStep">1 of 4</span><button class="muted" style="font-weight:700;padding:10px 0 10px 10px" onclick="finishOnboarding(false)">Skip</button></div>
@@ -908,7 +902,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
 <script src="i18n.js"></script>
 <script>
 'use strict';
-const VERSION='1.12.2';
+const VERSION='1.12.3';
 const API=window.MARBLUME_API??'https://marblume.stephenmurigimwangi403.workers.dev';
 const DATA=window.MARBLUME_LEVELS;const LV=DATA.levels;const TOTAL=LV.length;
 
@@ -1160,7 +1154,7 @@ function paintIcons(root=document){root.querySelectorAll('[data-i]').forEach(e=>
 function toast(html){const el=$('toast');el.innerHTML=html;el.style.opacity=1;clearTimeout(el._h);el._h=setTimeout(()=>el.style.opacity=0,2800)}
 
 /* ---------- navigation ---------- */
-let current='splash',prev='home';
+let current='',prev='home';
 const RENDER={help:()=>renderHelp(),map:()=>renderMap(),levels:()=>renderLS(),home:()=>renderHome(),garden:()=>renderGarden(),profile:()=>renderProfile(),daily:()=>renderDaily(),board:()=>renderResults(),shop:()=>renderShop(),settings:()=>renderSettings()};
 const LEAVES_LEVEL=['home','map','levels','daily','garden','shop','profile','worldintro'];
 function screenIsDark(id){const sc=document.querySelector('.screen[data-id="'+id+'"]');if(!sc)return false;if(id==='game')return $('game').classList.contains('gdark')||(isDark()&&!$('game').classList.contains('glight'));return sc.classList.contains('dark')||isDark()}
@@ -1181,13 +1175,13 @@ function back(){go(['settings','board','pause','stuck','help','privacy'].include
 function handleBack(){
   if($('dialog').classList.contains('on')){closeDialog(false);return}
   const map={help:'settings',privacy:'settings',game:'pause',pause:'game',stuck:'game',levels:'map',daily:'home',profile:'home',map:'home',garden:'home',shop:'home',win:'map',reward:'map',worldintro:'map'};
-  if(current==='home'||current==='splash'){P.App?.exitApp?.();return}
+  if(current==='home'){P.App?.exitApp?.();return}
   if(current==='settings'||current==='board'){back();return}
   if(current==='onboard'){finishOnboarding(false);return}
   go(map[current]||'home')}
 
-/* ---------- splash & onboarding ---------- */
-function leaveSplash(){if(current!=='splash')return;if(S.onboarded)go('home');else go('onboard')}
+/* ---------- onboarding ---------- */
+function homeIntro(){if(calm())return;const bd=$('hBoard');bd.querySelectorAll('.ball').forEach((b,k)=>b.style.animationDelay=Math.min(k*14,420)+'ms');bd.classList.add('intro');hPlayBtn.classList.add('intro');setTimeout(()=>{bd.classList.remove('intro');hPlayBtn.classList.remove('intro');bd.querySelectorAll('.ball').forEach(b=>b.style.animationDelay='')},1100)}
 const OB=[['Tap a tube. Tap where it goes.','A ball can land on the same colour or in an empty tube. That\'s the whole rule.',[[0,1],[1,0],[]]],
  ['Every finished tube blooms.','Fill a tube with one colour and it caps itself. Every 10 levels a flower grows in your garden.',[[2,2,2,2],[3,3,3],[3]]],
  ['Calm by design.','Unlimited free undo and no timers. Play at your own pace.',[[4,4,4,4],[5,5,5,5],[6,6,6,6]]],
@@ -1753,9 +1747,8 @@ let rzT;addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(
 if(P.App&&P.App.addListener){P.App.addListener('backButton',handleBack);P.App.addListener('resume',()=>{fetchSurvey();flushStats();readDeviceText()})}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(sess&&!sess.done&&current!=='game')endSess(false);save();flushStats()}});
 addEventListener('online',()=>{flushStats();fetchSurvey()});
-requestAnimationFrame(()=>{$('splashBar').style.width='100%'});
-setTimeout(()=>{try{P.SplashScreen?.hide?.()}catch(e){}},200);
-setTimeout(leaveSplash,1500);
+document.body.classList.add('boot');go(S.onboarded?'home':'onboard');if(current==='home')homeIntro();
+requestAnimationFrame(()=>requestAnimationFrame(()=>{document.body.classList.remove('boot');try{P.SplashScreen?.hide?.()}catch(e){}}));
 setTimeout(()=>{fetchSurvey();flushStats()},2500);
 </script>
 </body>
