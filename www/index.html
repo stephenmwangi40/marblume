@@ -11,6 +11,8 @@
 <link rel="manifest" href="manifest.json">
 <style>
 [hidden]{display:none!important}
+.starpop{animation:starPop .45s cubic-bezier(.2,.9,.3,1.4) both}.bump{animation:bump .35s ease}
+@keyframes starPop{from{transform:scale(0) rotate(-40deg)}to{transform:none}}@keyframes bump{40%{transform:scale(1.18)}100%{transform:none}}
 body.boot .screen.active{animation:none}
 .lb-board.intro .ball{animation:lbIn .5s cubic-bezier(.2,.8,.3,1.15) both}.lb-play.intro{animation:lbRise .45s .25s cubic-bezier(.2,.8,.3,1.1) both}
 @keyframes lbIn{from{transform:translateY(-70px) scale(.7)}to{transform:none}}@keyframes lbRise{from{transform:translateY(18px) scale(.96)}to{transform:none}}
@@ -646,7 +648,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
   <div class="body gut vc" style="display:flex;flex-direction:column;align-items:center;text-align:center;position:relative">
     <div class="label" style="margin-top:16px" id="winLabel"></div>
     <div id="winFlower" class="winflower" style="margin:14px 0 4px"></div>
-    <h2 class="serif" style="font-size:var(--f-display);line-height:1.05">It bloomed!</h2>
+    <h2 class="serif" style="font-size:var(--f-display);line-height:1.05" id="winH">It bloomed!</h2>
     <div class="row" style="gap:6px;margin:12px 0" id="winStars"></div>
     <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%">
       <div class="card stat"><b id="winMoves">0</b><span>moves</span></div>
@@ -902,7 +904,7 @@ button.lb-card:active,.lb-mode:active{transform:scale(.97)}
 <script src="i18n.js"></script>
 <script>
 'use strict';
-const VERSION='1.12.3';
+const VERSION='1.13.0';
 const API=window.MARBLUME_API??'https://marblume.stephenmurigimwangi403.workers.dev';
 const DATA=window.MARBLUME_LEVELS;const LV=DATA.levels;const TOTAL=LV.length;
 
@@ -1011,7 +1013,7 @@ function hintsLeft(){if(S.hints.day!==today()){S.hints={day:today(),left:3};save
 const AHEAD=2,isUnlocked=n=>n<=S.unlocked+AHEAD;
 // the seed badge shortens very large numbers (e.g. 1.2M) so it never squeezes the player's name
 const compact=n=>n<100000?N(n):new Intl.NumberFormat(LOCALE,{notation:'compact',maximumFractionDigits:1}).format(n);
-function setSeeds(v){S.seeds=Math.max(0,v);save();document.querySelectorAll('.seeds').forEach(e=>{e.textContent=compact(S.seeds);e.parentElement.setAttribute('aria-label',tr('{n} seeds',{n:N(S.seeds)}))})}
+function setSeeds(v){const up=v>S.seeds;S.seeds=Math.max(0,v);save();document.querySelectorAll('.seeds').forEach(e=>{if(up&&!calm()){e.parentElement.classList.remove('bump');void e.offsetWidth;e.parentElement.classList.add('bump')}e.textContent=compact(S.seeds);e.parentElement.setAttribute('aria-label',tr('{n} seeds',{n:N(S.seeds)}))})}
 
 /* ---------- sound: glass clinks made on the fly (no audio files) ---------- */
 let AC=null,MG=null;
@@ -1596,9 +1598,16 @@ function showWin(){
   winBadges.innerHTML=nb.map(([ti,rw])=>`<div class="card row" style="margin-top:10px;text-align:left"><span class="iconbtn" style="background:var(--bloom);color:var(--on-bloom)">${svg('trophy')}</span><span style="flex:1;min-width:0"><b style="display:block;line-height:1.3">${tr('New badge: {b}',{b:tr(ti)})}</b><span class="muted" style="font-size:var(--f13)">${tr('+{n} seeds',{n:rw})}</span></span></div>`).join('');
   winMoves.textContent=N(moves);winPar.textContent=N(par);winTotal=gain+nb.reduce((a,x)=>a+x[1],0);winSeeds.textContent='+'+N(winTotal);
   winGain=gain;winAd.hidden=!(gain>0&&canAd('win'));winAdT.textContent=tr('Watch a video for +{n} more seeds',{n:N(gain)});winStars.innerHTML=starRow(s,36);
-  winFlower.innerHTML=flower('#F4EEE3',150,8);
+  winH.textContent=winLine(s);winFlower.innerHTML=flower('#F4EEE3',150,8);
   SFX.win();buzz('success');
-  go('win');petals();flushStats()}
+  go('win');petals();winDelight(s,winTotal);flushStats()}
+// a headline that fits the moment: boss, daily, or how cleanly it was solved
+const WIN_LINES={3:()=>[tr('Flawless bloom!'),tr('Par-fect!'),tr('Not one pour wasted')],2:()=>[tr('It bloomed!'),tr('Sorted and smiling'),tr('Lovely pouring')],1:()=>[tr('Phew, it bloomed!'),tr('Messy, but it bloomed'),tr('A win is a win')]};
+function winLine(s){if(dailyMode)return tr('Daily done!');if(LV[curLevel-1]?.[5]===2)return tr('Boss bloomed!');const o=WIN_LINES[s]();return o[Math.floor(Math.random()*o.length)]}
+function winDelight(s,total){if(calm())return;
+  winStars.querySelectorAll('span').forEach((e,i)=>{e.classList.add('starpop');e.style.animationDelay=(250+i*170)+'ms';if(i<s)setTimeout(()=>clink(1046.5*Math.pow(2,[0,4,7][i]/12),.035),250+i*170)});
+  const t0=performance.now(),d=700;const step=t=>{const k=Math.min(1,(t-t0-300)/d);if(current!=='win')return;winSeeds.textContent='+'+N(Math.round(total*Math.max(0,k)));if(k<1)requestAnimationFrame(step);else winSeeds.classList.add('bump')};
+  winSeeds.classList.remove('bump');if(total>0)requestAnimationFrame(step)}
 function afterWin(){if(dailyMode){go('daily');return}
   const due=Math.floor((S.unlocked-1)/10);if(due>S.flowersSeen){setSeeds(S.seeds+50*(due-S.flowersSeen));S.flowersSeen=due;save();showReward(due*10)}else goNext()}
 function goNext(){const n=nextLv||curLevel+1;nextLv=0;if(n<=TOTAL)startLevel(n);else go('home')}
@@ -1729,13 +1738,13 @@ function renderShop(){setSeeds(S.seeds);checkUnlocks(true);renderShopAd();
   const mine=Object.keys(S.owned).filter(itemOf).sort((a,b)=>(S.owned[b].date||'').localeCompare(S.owned[a].date||''));
   collection.innerHTML=mine.map(id=>{const it=itemOf(id);const kind=tr({ball:'Ball',tube:'Tube',bg:'Scene',fx:'Effect',shape:'Shape'}[it[1]]);const on=S[slotOf(it[1])]===id;
     return `<div class="colrow"><span class="pv">${itemPreview(it,true)}</span><div style="flex:1;min-width:0"><b>${esc(tr(it[2]))}</b> <span class="muted" style="font-size:var(--f13)">${kind}${on?' · '+tr('in use'):''}</span><div class="how">${howText(id)}</div></div></div>`}).join('')}
-async function itemTap(id){const it=itemOf(id);const [,kind,name,price,un]=it;const nm=tr(name);
+async function itemTap(id){const it=itemOf(id);const [,kind,name,price,un]=it;const nm=tr(name);let bought=false;
   if(!S.owned[id]){
     if(un){toast(`<b>${esc(nm)}</b> ${tr('is earned, not bought:')} ${esc(tr(un[0]).toLowerCase())} (${N(Math.min(un[2],un[1]()))}/${N(un[2])}).`);return}
     if(S.seeds<price){toast(tr('You need {p} seeds for {x}. Finish levels to earn more.',{p:price,x:nm}));return}
     if(!await ask(tr('Get {x}?',{x:nm}),tr('This uses {p} of your {s} seeds. Seeds are earned by playing.',{p:price,s:N(S.seeds)}),tr('Get it')))return;
-    setSeeds(S.seeds-price);S.owned[id]={how:'bought',price,date:today()};toast(`<b>${esc(nm)}</b> ${tr('added to your collection')}`);SFX.reward();checkBadges()}
-  S[slotOf(kind)]=id;save();applySettings();renderShop();if(kind==='fx')petals()}
+    setSeeds(S.seeds-price);S.owned[id]={how:'bought',price,date:today()};toast(tr('{x} is yours!',{x:`<b>${esc(nm)}</b>`}));SFX.reward();buzz('success');checkBadges();bought=true}
+  S[slotOf(kind)]=id;save();applySettings();renderShop();if(kind==='fx'||bought&&!calm())petals()}
 
 /* ---------- boot ---------- */
 pickLang();translateStatic();applyTheme();readDeviceText();

@@ -1,4 +1,4 @@
-# Marblume — store listing kit (version 1.12.3)
+# Marblume — store listing kit (version 1.13.0)
 
 Everything below is ready to paste. Images are in `store/play/` and `store/appstore/`, videos in `store/video/`.
 
@@ -144,7 +144,11 @@ Already answered in the app (`ITSAppUsesNonExemptEncryption = NO`): the app only
 
 ---
 
-## What's new in 1.12.3 (paste into both stores)
+## What's new in 1.13.0 (paste into both stores)
+• Wins feel better: new cheers for every kind of win, stars that pop in and seeds that count up
+• A little celebration when you get something new in the Shop
+
+## What's new in 1.12.3
 • Opens straight to Home, faster, with a sharp launch screen that matches Light and Dark
 
 ## What's new in 1.12.2
